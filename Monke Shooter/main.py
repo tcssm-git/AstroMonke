@@ -16,13 +16,16 @@ clock = pygame.time.Clock()
 # Initialize Pygame
 pygame.init()
 
-font = pygame.font.SysFont(None , 48)
+font = pygame.font.SysFont(None , 50)
 health = 100
 decimalHealth = health/100
 
-hptxt = f"Health: {decimalHealth*100}"
 textColor = (255, 255, 255)
 
+hptxt = f"Health: {int(decimalHealth*100)}"
+txtsfs = font.render(hptxt, True, textColor)  
+hptxtRect = txtsfs.get_rect()
+hptxtRect.topleft = (1590, 50)
 
 
 
@@ -50,9 +53,9 @@ def bullet(i,j):
     pygame.draw.circle(screen, (247, 151, 7), (i, j), 5)
 
 #We couldn't agree on a name, so I wrote "the name that we cant agree on", and turned that into the acronym "tntwcao" and that looked like "tntcacao", so that is the name of the variable. It is the red rectangle for the healthbar
-def tntcacao(health):
+def tntcacao():
    
-    pygame.draw.rect(screen, (255-255*decimalHealth, 255*decimalHealth, 255), (10, 10, 1580*decimalHealth, 25), width = 0)
+    pygame.draw.rect(screen, (255-decimalHealth*255, decimalHealth*255, 255), (10, 10, 1580*decimalHealth, 25), width = 0)
 
 def tntcacaobelow():
     pygame.draw.rect(screen, (50, 50, 50), (0, 0, 1600, 45), width = 0)   
@@ -60,13 +63,14 @@ def tntcacaobelow():
 def textRect():
     pygame.draw.rect(screen, (50, 50, 50), (1350, 45, 1600, 55), width = 0) 
 
-txtsfs = font.render(hptxt, True, textColor)  
-hptxtRect = txtsfs.get_rect()
-hptxtRect.topright = (1590, 50)
 
-def totch():
-    hptxt = f"Health: {health}"
 
+def totch(): 
+    hptxt = f"Health: {decimalHealth*100}"
+    txtsfs = font.render(hptxt, True, textColor)
+    #hptxtRect = txtsfs.get_rect()
+
+    
 
 bullets = []
 aliens = []
@@ -86,7 +90,7 @@ x = 750
 y = 450
 oldX = 0
 oldY = 0
-angle = 0
+angle = 0.01
 s = 5
 u = 0
 
@@ -121,44 +125,27 @@ while running:
     dy = math.sin(math.radians(angle-90))*2
 
     if keys[pygame.K_w]:
-        if y<40 and dy>0:
+        if y<50 and dy>0:
             y = y + dy
         elif y>screen_height-120 and dy < 0:
             y = y + dy
-        elif y>40 and y < screen_height-120:
+        elif y>50 and y < screen_height-120:
             y = y + dy
         
-        if x<40 and dx>0:
+        if x<50 and dx>0:
             x = x + dx
         elif x>screen_width-120 and dx < 0:
             x = x + dx
-        elif x>40 and x < screen_width-120:
+        elif x>50 and x < screen_width-120:
             x = x + dx   
         
-
-    # if(dx == 0 and dy != 0):
-    #     if(dy > 0):
-    #         angle = 180
-    #     else:
-    #         angle = 0
-    # elif(dy == 0 and dx != 0):
-    #     if(dx > 0):
-    #         angle = 270
-    #     else:
-    #         angle = 90
-    # elif(dy != 0 and dx != 0):
-    #     angle = math.degrees(math.atan2(-dy, dx)) - 90
-    
-    
-
     ship(x,y,angle)
+
     b = 0
     while((b)<len(bullets)):
         bullets[b] = (bullets[b][0]+bullets[b][2], bullets[b][1]+bullets[b][3], bullets[b][2], bullets[b][3])
         bullet(bullets[b][0], bullets[b][1])
         b = b + 1
-
-    #print(aliens)
 
     if u%100 == 0:
         a = aln.AlienCube(oldX, oldY)
@@ -170,6 +157,7 @@ while running:
         a.move()
         a.detectCollision(bullets)
         a.blit(screen)
+        health = a.detectShipCollision(x,y, health)
         
     aliens[:] = [a for a in aliens if not a.isExperied()] 
 
@@ -186,11 +174,16 @@ while running:
         else:
             o = o + 1
 
+    hptxt = f"Health: {int(decimalHealth*100)}"
+    txtsfs = font.render(hptxt, True, textColor)  
+    hptxtRect = txtsfs.get_rect()
+    hptxtRect.topright = (1550, 50)
     tntcacaobelow()
     textRect()
     screen.blit(txtsfs, hptxtRect)
-    tntcacao(health)
-    #totch()
+    tntcacao()
+    totch()
+    
 
     oldY = y
     oldX = x
@@ -199,7 +192,8 @@ while running:
     pygame.display.flip()
     u = u + 1
 
-    health = health - 0.01
+
+    decimalHealth = health/100
     
     
         
