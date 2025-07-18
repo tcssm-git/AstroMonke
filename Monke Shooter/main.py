@@ -2,11 +2,21 @@ import pygame
 import math
 import random
 import alien as aln
+import tim
 
-
-shipimage = pygame.transform.scale(pygame.image.load("ship.png"), (80, 80))
+screen_width = 1600
+screen_height = 1000
+screen = pygame.display.set_mode((screen_width, screen_height))
+#shipimage = pygame.transform.scale(pygame.image.load("ship.png"), (80, 80))
 bulletimage = pygame.transform.scale(pygame.image.load("BULLET.png"), (10, 10))
 thumbimage = pygame.image.load("thumb-1920-825785.jpg")
+spriteSheetImageTim = pygame.image.load("Monke ship-Sheet.png").convert_alpha()
+spriteSheetTim = tim.Tim(spriteSheetImageTim)
+
+BLACK = (0, 0, 0)
+
+shipimage = spriteSheetTim.get_image(0, 50, 50, 1.7, BLACK).convert_alpha()
+timFrame1 = spriteSheetTim.get_image(1, 50, 50, 1.7, BLACK).convert_alpha()
 
 
 #Timer system for 60fps
@@ -29,17 +39,13 @@ hptxtRect.topleft = (1590, 50)
 
 
 
-# Set window dimensions
-screen_width = 1600
-screen_height = 1000
-screen = pygame.display.set_mode((screen_width, screen_height))
+#screen = pygame.display.set_mode((screen_width, screen_height))
 
 # Set window title
 pygame.display.set_caption("Minimal Pygame Example")
 
 def ship(i,j,a):
     image_rect = shipimage.get_rect()
-
     image_rect.x = i
     image_rect.y = j
     screen.blit(pygame.transform.rotate(shipimage, a), image_rect)
