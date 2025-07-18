@@ -15,9 +15,13 @@ spriteSheetTim = tim.Tim(spriteSheetImageTim)
 
 BLACK = (0, 0, 0)
 
-shipimage = spriteSheetTim.get_image(0, 50, 50, 1.7, BLACK).convert_alpha()
-timFrame1 = spriteSheetTim.get_image(1, 50, 50, 1.7, BLACK).convert_alpha()
+timFrame1 = spriteSheetTim.get_image(0, 50, 50, 1.7, BLACK).convert_alpha()
+timFrame2 = spriteSheetTim.get_image(1, 50, 50, 1.7, BLACK).convert_alpha()
 
+timFrames = [timFrame1, timFrame2]
+currentTimFrame = 0
+timFrameDelay = 600
+lastTimSwitch = pygame.time.get_ticks()
 
 #Timer system for 60fps
 clock = pygame.time.Clock()
@@ -44,12 +48,14 @@ hptxtRect.topleft = (1590, 50)
 # Set window title
 pygame.display.set_caption("Minimal Pygame Example")
 
-def ship(i,j,a):
-    image_rect = shipimage.get_rect()
+
+def ship(i,j,a,whichFrame):
+    image_rect = whichFrame.get_rect()
     image_rect.x = i
     image_rect.y = j
-    screen.blit(pygame.transform.rotate(shipimage, a), image_rect)
+    screen.blit(pygame.transform.rotate(whichFrame, a), image_rect)
     screen.blit(txtsfs, hptxtRect)
+
 
 def bullet(i,j):
     image_rect = bulletimage.get_rect()
@@ -92,6 +98,7 @@ aliens = []
 #                                                        |_|_|
 #                                                        |=|=|
 
+timer = 0
 x = 750
 y = 450
 oldX = 0
@@ -103,9 +110,16 @@ u = 0
 # Game loop
 running = True
 while running:
+    now = pygame.time.get_ticks()
     clock.tick(125)  # Limit FPS to 60
   
     screen.blit(thumbimage, (0,0))
+
+    if now - lastTimSwitch > timFrameDelay:
+        currentTimFrame = (currentTimFrame + 1) % len(timFrames)
+        lastTimSwitch = now
+
+    ship(x,y,angle,timFrames[currentTimFrame])
 
    
     # Handle events
@@ -144,8 +158,16 @@ while running:
             x = x + dx
         elif x>50 and x < screen_width-120:
             x = x + dx   
-        
-    ship(x,y,angle)
+    """       
+    timer = timer + 1
+    if timer%90==0 and timer%180!=0:
+        print("frame")
+        ship(x,y,angle,1)
+    if timer%90==0 and timer%180==0:
+        print("frame2")
+        ship(x,y,angle,2)
+    """    
+    
 
     b = 0
     while((b)<len(bullets)):
@@ -197,6 +219,7 @@ while running:
         # Update the display   
     pygame.display.flip()
     u = u + 1
+
 
 
     decimalHealth = health/100
