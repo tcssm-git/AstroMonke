@@ -1,6 +1,7 @@
 import pygame
 import math
 import random
+import tim
 
 screen_width = 1600
 screen_height = 1000
@@ -41,16 +42,36 @@ class AlienCube:
  
 
         #print(f'X Velocity: {self.vx}, Y Velocity: {self.vy}')
-        self.jontcoobimage = pygame.transform.scale(pygame.image.load("Jont coob alien.png"), (80, 60))
+        #self.jontcoobimage = pygame.transform.scale(pygame.image.load("Jont coob alien.png"), (80, 60))
         self.expired = False
+
+        spriteSheetImageJim = pygame.image.load("Monke alien-sheet.png").convert_alpha()
+        spriteSheetJim = tim.Tim(spriteSheetImageJim)
+
+        BLACK = (0, 0, 0)
+
+        jimFrame1 = spriteSheetJim.get_image(0, 50, 50, 1.7, BLACK).convert_alpha()
+        jimFrame2 = spriteSheetJim.get_image(1, 50, 50, 1.7, BLACK).convert_alpha()
+
+        self.jimFrames = [jimFrame1, jimFrame2]
+        self.currentJimFrame = 0
+        self.jimFrameDelay = 600
+        self.lastJimSwitch = pygame.time.get_ticks()
+
+        self.now = pygame.time.get_ticks()
         #while math.sqrt(((shipx - self.x) ** 2) + ((shipy - self.y) ** 2)) < 100:
             #self.expired = True
 
     def blit(self, screen):
-        image_rect = self.jontcoobimage.get_rect()
+        self.now = pygame.time.get_ticks()
+        if self.now - self.lastJimSwitch > self.jimFrameDelay:
+            self.currentJimFrame = (self.currentJimFrame + 1) % len(self.jimFrames)
+            self.lastJimSwitch = self.now
+        #print(self.now)
+        image_rect = self.jimFrames[self.currentJimFrame].get_rect()
         image_rect.x = self.x
         image_rect.y = self.y
-        screen.blit(self.jontcoobimage, image_rect)
+        screen.blit(self.jimFrames[self.currentJimFrame], image_rect)
 
     def move(self):
         self.x = self.x + self.vx

@@ -13,10 +13,13 @@ thumbimage = pygame.image.load("thumb-1920-825785.jpg")
 spriteSheetImageTim = pygame.image.load("Monke ship-Sheet.png").convert_alpha()
 spriteSheetTim = tim.Tim(spriteSheetImageTim)
 
+
 BLACK = (0, 0, 0)
 
 timFrame1 = spriteSheetTim.get_image(0, 50, 50, 1.7, BLACK).convert_alpha()
 timFrame2 = spriteSheetTim.get_image(1, 50, 50, 1.7, BLACK).convert_alpha()
+
+
 
 timFrames = [timFrame1, timFrame2]
 currentTimFrame = 0
@@ -118,6 +121,8 @@ while running:
     if now - lastTimSwitch > timFrameDelay:
         currentTimFrame = (currentTimFrame + 1) % len(timFrames)
         lastTimSwitch = now
+
+
 
     ship(x,y,angle,timFrames[currentTimFrame])
 
