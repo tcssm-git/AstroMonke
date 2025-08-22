@@ -9,22 +9,62 @@ screen_height = 1000
 screen = pygame.display.set_mode((screen_width, screen_height))
 #shipimage = pygame.transform.scale(pygame.image.load("ship.png"), (80, 80))
 bulletimage = pygame.transform.scale(pygame.image.load("BULLET.png"), (10, 10))
-thumbimage = pygame.image.load("thumb-1920-825785.jpg")
+thumbimage = pygame.image.load("thumb-1920-825785.jpg") #background image
+
+#player sprite sheet
 spriteSheetImageTim = pygame.image.load("Monke ship-Sheet.png").convert_alpha()
 spriteSheetTim = tim.Tim(spriteSheetImageTim)
+
+#player moving sprite sheet
+spriteSheetImageTimFire = pygame.image.load("Monke_ship_fire-Sheet.png").convert_alpha()
+spriteSheetTimFire = tim.Tim(spriteSheetImageTimFire)
+
+#bullet sprite sheet
+spriteSheetImageBullet = pygame.image.load("Monke bullet-Sheet.png").convert_alpha()
+spriteSheetBullet = tim.Tim(spriteSheetImageBullet)
 
 
 BLACK = (0, 0, 0)
 
+#player anim frames
 timFrame1 = spriteSheetTim.get_image(0, 50, 50, 1.7, BLACK).convert_alpha()
 timFrame2 = spriteSheetTim.get_image(1, 50, 50, 1.7, BLACK).convert_alpha()
 
+#palyer moving anim frames
+timFireFrame1 = spriteSheetTimFire.get_image(0, 50, 50, 1.7, BLACK).convert_alpha()
+timFireFrame2 = spriteSheetTimFire.get_image(1, 50, 50, 1.7, BLACK).convert_alpha()
+timFireFrame3 = spriteSheetTimFire.get_image(2, 50, 50, 1.7, BLACK).convert_alpha()
+timFireFrame4 = spriteSheetTimFire.get_image(3, 50, 50, 1.7, BLACK).convert_alpha()
+
+#bullet anim frames
+bulletFrame1 = spriteSheetBullet.get_image(0, 10, 10, 3, BLACK).convert_alpha()
+bulletFrame2 = spriteSheetBullet.get_image(1, 10, 10, 3, BLACK).convert_alpha()
+bulletFrame3 = spriteSheetBullet.get_image(2, 10, 10, 3, BLACK).convert_alpha()
+bulletFrame4 = spriteSheetBullet.get_image(3, 10, 10, 3, BLACK).convert_alpha()
+bulletFrame5 = spriteSheetBullet.get_image(4, 10, 10, 3, BLACK).convert_alpha()
+bulletFrame6 = spriteSheetBullet.get_image(5, 10, 10, 3, BLACK).convert_alpha()
+bulletFrame7 = spriteSheetBullet.get_image(6, 10, 10, 3, BLACK).convert_alpha()
+bulletFrame8 = spriteSheetBullet.get_image(7, 10, 10, 3, BLACK).convert_alpha()
 
 
+
+#player anim variables
 timFrames = [timFrame1, timFrame2]
 currentTimFrame = 0
 timFrameDelay = 600
 lastTimSwitch = pygame.time.get_ticks()
+
+#player moving anim variables
+timFireFrames = [timFireFrame1, timFireFrame2, timFireFrame3, timFireFrame4]
+currentTimFireFrame = 0
+timFireFrameDelay = 200
+lastTimFireSwitch = pygame.time.get_ticks()
+
+#player anim variables
+bulletFrames = [bulletFrame1, bulletFrame2, bulletFrame3, bulletFrame4, bulletFrame5, bulletFrame6, bulletFrame7, bulletFrame8]
+currentBulletFrame = 0
+bulletFrameDelay = 100
+lastBulletSwitch = pygame.time.get_ticks()
 
 #Timer system for 60fps
 clock = pygame.time.Clock()
@@ -60,12 +100,14 @@ def ship(i,j,a,whichFrame):
     screen.blit(txtsfs, hptxtRect)
 
 
-def bullet(i,j):
+def bullet(i,j, whichFrame):
     image_rect = bulletimage.get_rect()
     image_rect.x = i
     image_rect.y = j
     #screen.blit(bulletimage, image_rect)
-    pygame.draw.circle(screen, (247, 151, 7), (i, j), 5)
+    #pygame.draw.circle(screen, (247, 151, 7), (i, j), 5)
+    screen.blit(whichFrame, image_rect)
+    #screen.blit(txtsfs, hptxtRect)
 
 #We couldn't agree on a name, so I wrote "the name that we cant agree on", and turned that into the acronym "tntwcao" and that looked like "tntcacao", so that is the name of the variable. It is the red rectangle for the healthbar
 def tntcacao():
@@ -109,6 +151,8 @@ oldY = 0
 angle = 0.01
 s = 5
 u = 0
+dx = 0
+dy = 0
 
 # Game loop
 running = True
@@ -118,14 +162,11 @@ while running:
   
     screen.blit(thumbimage, (0,0))
 
-    if now - lastTimSwitch > timFrameDelay:
-        currentTimFrame = (currentTimFrame + 1) % len(timFrames)
-        lastTimSwitch = now
+    timMoving = False
 
-
-
-    ship(x,y,angle,timFrames[currentTimFrame])
-
+    if now - lastBulletSwitch > bulletFrameDelay:
+        currentBulletFrame = (currentBulletFrame + 1) % len(bulletFrames)
+        lastBulletSwitch = now
    
     # Handle events
     for event in pygame.event.get():
@@ -150,6 +191,8 @@ while running:
     dy = math.sin(math.radians(angle-90))*2
 
     if keys[pygame.K_w]:
+        timMoving = True
+
         if y<50 and dy>0:
             y = y + dy
         elif y>screen_height-120 and dy < 0:
@@ -173,11 +216,23 @@ while running:
         ship(x,y,angle,2)
     """    
     
+    if now - lastTimSwitch > timFrameDelay:
+        currentTimFrame = (currentTimFrame + 1) % len(timFrames)
+        lastTimSwitch = now
+
+    if now - lastTimFireSwitch > timFireFrameDelay:
+        currentTimFireFrame = (currentTimFireFrame + 1) % len(timFireFrames)
+        lastTimFireSwitch = now
+
+    if timMoving:
+        ship(x,y,angle,timFireFrames[currentTimFireFrame])
+    else:
+        ship(x,y,angle,timFrames[currentTimFrame])
 
     b = 0
     while((b)<len(bullets)):
         bullets[b] = (bullets[b][0]+bullets[b][2], bullets[b][1]+bullets[b][3], bullets[b][2], bullets[b][3])
-        bullet(bullets[b][0], bullets[b][1])
+        bullet(bullets[b][0], bullets[b][1], bulletFrames[currentBulletFrame])
         b = b + 1
 
     if u%100 == 0:
