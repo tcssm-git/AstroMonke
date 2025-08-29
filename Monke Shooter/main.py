@@ -6,10 +6,12 @@ import tim
 
 screen_width = 1600
 screen_height = 1000
+gameover = False
 screen = pygame.display.set_mode((screen_width, screen_height))
 #shipimage = pygame.transform.scale(pygame.image.load("ship.png"), (80, 80))
 bulletimage = pygame.transform.scale(pygame.image.load("BULLET.png"), (10, 10))
 thumbimage = pygame.image.load("thumb-1920-825785.jpg") #background image
+ubededimage = pygame.image.load("Untitled presentation.png") #deathscreen
 
 #player sprite sheet
 spriteSheetImageTim = pygame.image.load("Monke ship-Sheet.png").convert_alpha()
@@ -109,10 +111,10 @@ def bullet(i,j, whichFrame):
     screen.blit(whichFrame, image_rect)
     #screen.blit(txtsfs, hptxtRect)
 
-#We couldn't agree on a name, so I wrote "the name that we cant agree on", and turned that into the acronym "tntwcao" and that looked like "tntcacao", so that is the name of the variable. It is the red rectangle for the healthbar
+#We couldn't agree on a name, so I wrote "the name that we cant agree on", and turned that into the acronym "tntwcao" and that looked like "tntcacao", so that is the name of the variable. It is the rectangle for the healthbar
 def tntcacao():
-   
-    pygame.draw.rect(screen, (255-decimalHealth*255, decimalHealth*255, 255), (10, 10, 1580*decimalHealth, 25), width = 0)
+    if decimalHealth > 0:
+       pygame.draw.rect(screen, (255-decimalHealth*255, decimalHealth*255, 255), (10, 10, 1580*decimalHealth, 25), width = 0)
 
 def tntcacaobelow():
     pygame.draw.rect(screen, (50, 50, 50), (0, 0, 1600, 45), width = 0)   
@@ -163,6 +165,11 @@ while running:
     screen.blit(thumbimage, (0,0))
 
     timMoving = False
+
+    if health <= 0:
+        gameover = True
+        aliens = []
+
 
     if now - lastBulletSwitch > bulletFrameDelay:
         currentBulletFrame = (currentBulletFrame + 1) % len(bulletFrames)
@@ -235,11 +242,13 @@ while running:
         bullet(bullets[b][0], bullets[b][1], bulletFrames[currentBulletFrame])
         b = b + 1
 
-    if u%100 == 0:
+    if u%100 == 0 and not gameover:
         a = aln.AlienCube(oldX, oldY)
         aliens.append(a) 
         a = aln.AlienCube(oldX, oldY)
         aliens.append(a) 
+
+    
     
     for a in aliens:
         a.move()
@@ -262,7 +271,10 @@ while running:
         else:
             o = o + 1
 
-    hptxt = f"Health: {int(decimalHealth*100)}"
+    if decimalHealth >= 0:
+        hptxt = f"Health: {int(decimalHealth*100)}"
+    else:
+        hptxt = f"Health: {int(0)}"
     txtsfs = font.render(hptxt, True, textColor)  
     hptxtRect = txtsfs.get_rect()
     hptxtRect.topright = (1550, 50)

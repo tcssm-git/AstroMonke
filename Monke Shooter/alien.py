@@ -92,7 +92,7 @@ class AlienCube:
 
     def detectCollision(self, list):
         for b in list:
-            if math.sqrt(((b[0] - self.x-40) ** 2) + ((b[1] - self.y-30) ** 2)) < 25:
+            if math.sqrt(((b[0] - self.x) ** 2) + ((b[1] - self.y) ** 2)) < 50:
                 self.expired = True
 
     def detectShipCollision(self, shipx, shipy, health):
