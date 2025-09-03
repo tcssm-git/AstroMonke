@@ -4,14 +4,14 @@ import random
 import alien as aln
 import tim
 
-screen_width = 1600
-screen_height = 1000
+screen_width = 1920
+screen_height = 1020
 gameover = False
 screen = pygame.display.set_mode((screen_width, screen_height))
 #shipimage = pygame.transform.scale(pygame.image.load("ship.png"), (80, 80))
 bulletimage = pygame.transform.scale(pygame.image.load("BULLET.png"), (10, 10))
 thumbimage = pygame.image.load("thumb-1920-825785.jpg") #background image
-ubededimage = pygame.image.load("Untitled presentation.png") #deathscreen
+ubededimage = pygame.transform.scale(pygame.image.load("Untitled presentation.png"), (screen_width, screen_height)) #deathscreen
 
 #player sprite sheet
 spriteSheetImageTim = pygame.image.load("Monke ship-Sheet.png").convert_alpha()
@@ -84,9 +84,7 @@ textColor = (255, 255, 255)
 hptxt = f"Health: {int(decimalHealth*100)}"
 txtsfs = font.render(hptxt, True, textColor)  
 hptxtRect = txtsfs.get_rect()
-hptxtRect.topleft = (1590, 50)
-
-
+hptxtRect.topleft = (screen_width - 10, 50)
 
 #screen = pygame.display.set_mode((screen_width, screen_height))
 
@@ -98,29 +96,33 @@ def ship(i,j,a,whichFrame):
     image_rect = whichFrame.get_rect()
     image_rect.x = i
     image_rect.y = j
-    screen.blit(pygame.transform.rotate(whichFrame, a), image_rect)
-    screen.blit(txtsfs, hptxtRect)
+    if health > 0:
+        screen.blit(pygame.transform.rotate(whichFrame, a), image_rect)
+        screen.blit(txtsfs, hptxtRect)
 
 
 def bullet(i,j, whichFrame):
     image_rect = bulletimage.get_rect()
     image_rect.x = i
     image_rect.y = j
-    #screen.blit(bulletimage, image_rect)
-    #pygame.draw.circle(screen, (247, 151, 7), (i, j), 5)
-    screen.blit(whichFrame, image_rect)
-    #screen.blit(txtsfs, hptxtRect)
+    if health > 0:
+        #screen.blit(bulletimage, image_rect)
+        #pygame.draw.circle(screen, (247, 151, 7), (i, j), 5)
+        screen.blit(whichFrame, image_rect)
+        #screen.blit(txtsfs, hptxtRect)
 
 #We couldn't agree on a name, so I wrote "the name that we cant agree on", and turned that into the acronym "tntwcao" and that looked like "tntcacao", so that is the name of the variable. It is the rectangle for the healthbar
 def tntcacao():
     if decimalHealth > 0:
-       pygame.draw.rect(screen, (255-decimalHealth*255, decimalHealth*255, 255), (10, 10, 1580*decimalHealth, 25), width = 0)
+       pygame.draw.rect(screen, (255-decimalHealth*255, decimalHealth*255, 255), (10, 10, (screen_width-20)*decimalHealth, 25), width = 0)
 
 def tntcacaobelow():
-    pygame.draw.rect(screen, (50, 50, 50), (0, 0, 1600, 45), width = 0)   
+    if health > 0:
+        pygame.draw.rect(screen, (50, 50, 50), (0, 0, screen_width, 45), width = 0)   
 
 def textRect():
-    pygame.draw.rect(screen, (50, 50, 50), (1350, 45, 1600, 55), width = 0) 
+    if health > 0:
+        pygame.draw.rect(screen, (50, 50, 50), (screen_width - 250, 45, screen_width, 55), width = 0) 
 
 
 
@@ -134,7 +136,7 @@ def totch():
 bullets = []
 aliens = []
 
-#                                                      W.|W.w|w
+#                                                      w.|W.w|w
 #                                                      / . , .\
 #                                  Ferdinand --->      \ _O___/
 #                                                       __| |__
@@ -146,8 +148,8 @@ aliens = []
 #                                                        |=|=|
 
 timer = 0
-x = 750
-y = 450
+x = screen_width/2
+y = screen_height/2
 oldX = 0
 oldY = 0
 angle = 0.01
@@ -169,6 +171,7 @@ while running:
     if health <= 0:
         gameover = True
         aliens = []
+        screen.blit(ubededimage, (0,0))
 
 
     if now - lastBulletSwitch > bulletFrameDelay:
@@ -242,7 +245,7 @@ while running:
         bullet(bullets[b][0], bullets[b][1], bulletFrames[currentBulletFrame])
         b = b + 1
 
-    if u%100 == 0 and not gameover:
+    if u%80 == 0 and not gameover:
         a = aln.AlienCube(oldX, oldY)
         aliens.append(a) 
         a = aln.AlienCube(oldX, oldY)
@@ -277,7 +280,7 @@ while running:
         hptxt = f"Health: {int(0)}"
     txtsfs = font.render(hptxt, True, textColor)  
     hptxtRect = txtsfs.get_rect()
-    hptxtRect.topright = (1550, 50)
+    hptxtRect.topright = (screen_width - 50, 50)
     tntcacaobelow()
     textRect()
     screen.blit(txtsfs, hptxtRect)

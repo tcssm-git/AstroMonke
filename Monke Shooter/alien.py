@@ -3,8 +3,8 @@ import math
 import random
 import tim
 
-screen_width = 1600
-screen_height = 1000
+screen_width = 1920
+screen_height = 1020
 
 base_speed = random.uniform(1.0, 3.0)  # Aliens move between 1 and 3 pixels per frame
 
