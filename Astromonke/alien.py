@@ -98,8 +98,9 @@ class AlienCube:
     def detectShipCollision(self, shipx, shipy, health):
         if math.sqrt(((shipx+37 - self.x-40) ** 2) + ((shipy+37 - self.y-30) ** 2)) < 60:
             self.expired = True
-            return health - 5
-        return health
+            return health - 5, True
+
+        return health, False
     
 
 
