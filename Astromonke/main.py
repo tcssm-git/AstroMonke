@@ -1,3 +1,5 @@
+#  ͡( ͡° ͜ʖ ͡°)   <---- Lord Lenny
+
 import pygame
 import math
 import random
@@ -7,14 +9,30 @@ import time
 
 screen_width = 1920
 screen_height = 1020
+damaged_screen = pygame.Surface((screen_width, screen_height))
+damaged_screen.fill((255, 0, 0))
+alpha = 0
+fade_speed = 2
+fading = False
+fade_direction = 1
 gameover = False
+damageTaken = False
 screen = pygame.display.set_mode((screen_width, screen_height))
 #shipimage = pygame.transform.scale(pygame.image.load("ship.png"), (80, 80))
 bulletimage = pygame.transform.scale(pygame.image.load("BULLET.png"), (10, 10))
 thumbimage = pygame.image.load("thumb-1920-825785.jpg") #background image
 ubededimage = pygame.transform.scale(pygame.image.load("Untitled_Presentation.png"), (screen_width, screen_height)) #deathscreen
+ubegonnarespawnimage = pygame.transform.scale(pygame.image.load("Respawn_pressed.png"), (screen_width, screen_height)) #respawn button pressed
+ubegonnaexitimage = pygame.transform.scale(pygame.image.load("Exit_pressed.png"), (screen_width, screen_height)) #exit button pressed
 ubegoimage = pygame.transform.scale(pygame.image.load("Start screen.png"), (screen_width, screen_height)) #startscreen
 ubegonowimage = pygame.transform.scale(pygame.image.load("Start screen pressed.png"), (screen_width, screen_height)) #startscreen but pressed
+
+def player_takes_damage():
+    global fading, fade_direction, alpha
+    fading = True 
+    fade_direction = 1
+    alpha = 0
+    damageTaken = False
 
 #player sprite sheet
 spriteSheetImageTim = pygame.image.load("Monke ship-Sheet.png").convert_alpha()
@@ -129,11 +147,9 @@ def totch():
 bullets = []
 aliens = []
 
-#ඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞ
-#
 #                                                      w.|W.w|w
 #                                                      / . , .\
-#                                  Ferdinand --->      \ _O___/
+#                                  Ferdinand --->      \ __o_ /
 #                                                       __| |__
 #                                                      |   v   |
 #                                                      |_|   |_|
@@ -152,6 +168,8 @@ s = 5
 u = 0
 dx = 0
 dy = 0
+dxx = 442
+dyy = 145
 running = True
 gamestarted = False
 
@@ -177,13 +195,23 @@ while running:
                     #print("space pressed")
                     screen.blit(ubegonowimage, (0,0))
                     buttonPresssed = True
+            
         pygame.display.flip()
         if buttonPresssed:
             buttonDelay += 1
         if buttonDelay > 25:
             gamestarted = True
     else:
-  
+
+        if gameover == True:
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    m_x, m_y = pygame.mouse.get_pos()
+                    if(m_x > (166) and m_x < (166 + dxx)) and (m_y > (698) and m_y < (698 + dyy)): #respawn
+                        screen.blit(ubegonnarespawnimage, (0,0)) 
+                    if(m_x > (990) and m_x < (990 + dxx)) and (m_y > (698) and m_y < (698 + dyy)): #exit to menu
+                        screen.blit(ubegonnaexitimage, (0,0))
+
         screen.blit(thumbimage, (0,0))
 
         timMoving = False
@@ -192,7 +220,8 @@ while running:
             gameover = True
             aliens = []
             screen.blit(ubededimage, (0,0))
-            
+
+
 
         if now - lastBulletSwitch > bulletFrameDelay:
             currentBulletFrame = (currentBulletFrame + 1) % len(bulletFrames)
@@ -205,7 +234,20 @@ while running:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     bullets.append((x+40,y+40,dx*s,dy*s))
-    
+       
+        if fading:
+            alpha += fade_speed * fade_direction
+
+            if fade_direction == 1 and alpha >= 30:
+                alpha = 30
+                fade_direction = -1
+            elif fade_direction == -1 and alpha <= 0:
+                alpha = 0
+                fading = False
+
+            damaged_screen.set_alpha(alpha)
+            screen.blit(damaged_screen, (0, 0))
+
         keys=pygame.key.get_pressed()
                         
         if keys[pygame.K_d]:
@@ -253,7 +295,7 @@ while running:
             bullet(bullets[b][0], bullets[b][1], bulletFrames[currentBulletFrame])
             b = b + 1
 
-        if u%80 == 0 and not gameover:
+        if u%8 == 0 and not gameover:
             a = aln.AlienCube(oldX, oldY)
             aliens.append(a) 
             a = aln.AlienCube(oldX, oldY)
@@ -263,7 +305,9 @@ while running:
             a.move()
             a.detectCollision(bullets)
             a.blit(screen)
-            health = a.detectShipCollision(x,y, health)
+            health, damageTaken = a.detectShipCollision(x,y, health)
+            if damageTaken:
+                player_takes_damage()
             
         aliens[:] = [a for a in aliens if not a.isExperied()] 
 
