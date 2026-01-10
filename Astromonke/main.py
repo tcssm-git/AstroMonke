@@ -13,12 +13,12 @@ damaged_screen = pygame.Surface((screen_width, screen_height))
 damaged_screen.fill((255, 0, 0))
 alpha = 0
 fade_speed = 2
+size = 5
 fading = False
 fade_direction = 1
 gameover = False
 damageTaken = False
 screen = pygame.display.set_mode((screen_width, screen_height))
-#shipimage = pygame.transform.scale(pygame.image.load("ship.png"), (80, 80))
 bulletimage = pygame.transform.scale(pygame.image.load("BULLET.png"), (10, 10))
 thumbimage = pygame.image.load("thumb-1920-825785.jpg") #background image
 ubededimage = pygame.transform.scale(pygame.image.load("Untitled_Presentation.png"), (screen_width, screen_height)) #deathscreen
@@ -49,24 +49,24 @@ spriteSheetBullet = tim.Tim(spriteSheetImageBullet)
 BLACK = (0, 0, 0)
 
 #player anim frames
-timFrame1 = spriteSheetTim.get_image(0, 50, 50, 1.7, BLACK).convert_alpha()
-timFrame2 = spriteSheetTim.get_image(1, 50, 50, 1.7, BLACK).convert_alpha()
+timFrame1 = spriteSheetTim.get_image(0, 50, 50, 1.7 * size, BLACK).convert_alpha()
+timFrame2 = spriteSheetTim.get_image(1, 50, 50, 1.7 * size, BLACK).convert_alpha()
 
 #palyer moving anim frames
-timFireFrame1 = spriteSheetTimFire.get_image(0, 50, 50, 1.7, BLACK).convert_alpha()
-timFireFrame2 = spriteSheetTimFire.get_image(1, 50, 50, 1.7, BLACK).convert_alpha()
-timFireFrame3 = spriteSheetTimFire.get_image(2, 50, 50, 1.7, BLACK).convert_alpha()
-timFireFrame4 = spriteSheetTimFire.get_image(3, 50, 50, 1.7, BLACK).convert_alpha()
+timFireFrame1 = spriteSheetTimFire.get_image(0, 50, 50, 1.7 * size, BLACK).convert_alpha()
+timFireFrame2 = spriteSheetTimFire.get_image(1, 50, 50, 1.7 * size, BLACK).convert_alpha()
+timFireFrame3 = spriteSheetTimFire.get_image(2, 50, 50, 1.7 * size, BLACK).convert_alpha()
+timFireFrame4 = spriteSheetTimFire.get_image(3, 50, 50, 1.7 * size, BLACK).convert_alpha()
 
 #bullet anim frames
-bulletFrame1 = spriteSheetBullet.get_image(0, 10, 10, 3, BLACK).convert_alpha()
-bulletFrame2 = spriteSheetBullet.get_image(1, 10, 10, 3, BLACK).convert_alpha()
-bulletFrame3 = spriteSheetBullet.get_image(2, 10, 10, 3, BLACK).convert_alpha()
-bulletFrame4 = spriteSheetBullet.get_image(3, 10, 10, 3, BLACK).convert_alpha()
-bulletFrame5 = spriteSheetBullet.get_image(4, 10, 10, 3, BLACK).convert_alpha()
-bulletFrame6 = spriteSheetBullet.get_image(5, 10, 10, 3, BLACK).convert_alpha()
-bulletFrame7 = spriteSheetBullet.get_image(6, 10, 10, 3, BLACK).convert_alpha()
-bulletFrame8 = spriteSheetBullet.get_image(7, 10, 10, 3, BLACK).convert_alpha()
+bulletFrame1 = spriteSheetBullet.get_image(0, 10, 10, 3 * size, BLACK).convert_alpha()
+bulletFrame2 = spriteSheetBullet.get_image(1, 10, 10, 3 * size, BLACK).convert_alpha()
+bulletFrame3 = spriteSheetBullet.get_image(2, 10, 10, 3 * size, BLACK).convert_alpha()
+bulletFrame4 = spriteSheetBullet.get_image(3, 10, 10, 3 * size, BLACK).convert_alpha()
+bulletFrame5 = spriteSheetBullet.get_image(4, 10, 10, 3 * size, BLACK).convert_alpha()
+bulletFrame6 = spriteSheetBullet.get_image(5, 10, 10, 3 * size, BLACK).convert_alpha()
+bulletFrame7 = spriteSheetBullet.get_image(6, 10, 10, 3 * size, BLACK).convert_alpha()
+bulletFrame8 = spriteSheetBullet.get_image(7, 10, 10, 3 * size, BLACK).convert_alpha()
 
 #player anim variables
 timFrames = [timFrame1, timFrame2]
@@ -175,6 +175,8 @@ gamestarted = False
 
 buttonPresssed = False
 buttonDelay = 0
+
+endButtonPressed = False
 # Game loop
     
 #screen.blit(ubegoimage, (0,0))
@@ -183,43 +185,70 @@ if gamestarted == False and buttonPresssed == False:
 
 while running:
     now = pygame.time.get_ticks()
-    clock.tick(125)  # Limit FPS to 60
+    clock.tick(125)
 
     if gamestarted == False:
-        #print(buttonDelay)
+        # Draw the menu background every frame while in menu mode
+        if not buttonPresssed:
+            screen.blit(ubegoimage, (0,0))
+        else:
+            screen.blit(ubegonowimage, (0,0))
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    #print("space pressed")
-                    screen.blit(ubegonowimage, (0,0))
                     buttonPresssed = True
             
-        pygame.display.flip()
         if buttonPresssed:
+            buttonDelay += 1
+            if buttonDelay > 25:
+                gamestarted = True
+        
+        pygame.display.flip() # Keep the menu updating
+        if buttonPresssed:   #for play button
             buttonDelay += 1
         if buttonDelay > 25:
             gamestarted = True
     else:
 
         if gameover == True:
+            aliens = []
+            if endButtonPressed == False:
+                screen.blit(ubededimage, (0,0))
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     m_x, m_y = pygame.mouse.get_pos()
                     if(m_x > (166) and m_x < (166 + dxx)) and (m_y > (698) and m_y < (698 + dyy)): #respawn
-                        screen.blit(ubegonnarespawnimage, (0,0)) 
-                    if(m_x > (990) and m_x < (990 + dxx)) and (m_y > (698) and m_y < (698 + dyy)): #exit to menu
-                        screen.blit(ubegonnaexitimage, (0,0))
+                        health = 100
+                        gameover = False
+                        endButtonPressed = False
+                        aliens = []
+                        bullets = []
+                        angle = 0.01
+                        x, y = screen_width/2, screen_height/2 
+                    if(m_x > (1100) and m_x < (1100 + dxx)) and (m_y > (698) and m_y < (698 + dyy)): #exit to menu
+                        gamestarted = False
+                        buttonPresssed = False
+                        buttonDelay = 0
+                        
+                        health = 100
+                        decimalHealth = 1.0
+                        gameover = False
+                        endButtonPressed = False
+                        bullets = []
+                        aliens = []
+                        angle = 0.01
+                        x, y = screen_width/2, screen_height/2                                                                      
 
-        screen.blit(thumbimage, (0,0))
+        if gameover==False:
+            screen.blit(thumbimage, (0,0))
 
         timMoving = False
 
         if health <= 0:
             gameover = True
-            aliens = []
-            screen.blit(ubededimage, (0,0))
 
 
 
@@ -233,7 +262,7 @@ while running:
                 running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    bullets.append((x+40,y+40,dx*s,dy*s))
+                    bullets.append((x+37*size,y+37*size,dx*s,dy*s))
        
         if fading:
             alpha += fade_speed * fade_direction
@@ -255,7 +284,7 @@ while running:
 
         if keys[pygame.K_a]:
             angle = angle + 1.7
-                
+                    
         dx = -math.cos(math.radians(angle-90))*2
         dy = math.sin(math.radians(angle-90))*2
 
@@ -295,7 +324,7 @@ while running:
             bullet(bullets[b][0], bullets[b][1], bulletFrames[currentBulletFrame])
             b = b + 1
 
-        if u%8 == 0 and not gameover:
+        if u%200/size == 0 and not gameover:
             a = aln.AlienCube(oldX, oldY)
             aliens.append(a) 
             a = aln.AlienCube(oldX, oldY)
