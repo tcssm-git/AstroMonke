@@ -5,6 +5,7 @@ import tim
 
 screen_width = 1920
 screen_height = 1020
+size = 5
 
 base_speed = random.uniform(1.0, 3.0)  # Aliens move between 1 and 3 pixels per frame
 
@@ -50,8 +51,8 @@ class AlienCube:
 
         BLACK = (0, 0, 0)
 
-        jimFrame1 = spriteSheetJim.get_image(0, 50, 50, 1.7, BLACK).convert_alpha()
-        jimFrame2 = spriteSheetJim.get_image(1, 50, 50, 1.7, BLACK).convert_alpha()
+        jimFrame1 = spriteSheetJim.get_image(0, 50, 50, 1.7 * size, BLACK).convert_alpha()
+        jimFrame2 = spriteSheetJim.get_image(1, 50, 50, 1.7 * size, BLACK).convert_alpha()
 
         self.jimFrames = [jimFrame1, jimFrame2]
         self.currentJimFrame = 0
@@ -92,11 +93,11 @@ class AlienCube:
 
     def detectCollision(self, list):
         for b in list:
-            if math.sqrt(((b[0] - self.x) ** 2) + ((b[1] - self.y) ** 2)) < 50:
+            if math.sqrt(((b[0] - self.x-40 * size) ** 2) + ((b[1] - self.y-30 * size) ** 2)) < 50 * size:
                 self.expired = True
 
     def detectShipCollision(self, shipx, shipy, health):
-        if math.sqrt(((shipx+37 - self.x-40) ** 2) + ((shipy+37 - self.y-30) ** 2)) < 60:
+        if math.sqrt(((shipx+37 * size - self.x-40 * size) ** 2) + ((shipy+37 * size - self.y-30) ** 2)) < 60 * size:
             self.expired = True
             return health - 5, True
 
