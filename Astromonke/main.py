@@ -6,6 +6,7 @@ import random
 import alien as aln
 import tim
 import time
+import utils
 
 screen_width = 1920
 screen_height = 1020
@@ -13,7 +14,7 @@ damaged_screen = pygame.Surface((screen_width, screen_height))
 damaged_screen.fill((255, 0, 0))
 alpha = 0
 fade_speed = 2
-size = 5
+size = 2
 fading = False
 fade_direction = 1
 gameover = False
@@ -159,6 +160,7 @@ aliens = []
 #                                                        |=|=|
 
 timer = 0
+wave = 0
 x = screen_width/2
 y = screen_height/2
 oldX = 0
@@ -228,6 +230,7 @@ while running:
                         bullets = []
                         angle = 0.01
                         x, y = screen_width/2, screen_height/2 
+                        size = 2
                     if(m_x > (1100) and m_x < (1100 + dxx)) and (m_y > (698) and m_y < (698 + dyy)): #exit to menu
                         gamestarted = False
                         buttonPresssed = False
@@ -250,7 +253,29 @@ while running:
         if health <= 0:
             gameover = True
 
+        #player anim frames
+        timFrame1 = spriteSheetTim.get_image(0, 50, 50, 1.7 * size, BLACK).convert_alpha()
+        timFrame2 = spriteSheetTim.get_image(1, 50, 50, 1.7 * size, BLACK).convert_alpha()
 
+        #palyer moving anim frames
+        timFireFrame1 = spriteSheetTimFire.get_image(0, 50, 50, 1.7 * size, BLACK).convert_alpha()
+        timFireFrame2 = spriteSheetTimFire.get_image(1, 50, 50, 1.7 * size, BLACK).convert_alpha()
+        timFireFrame3 = spriteSheetTimFire.get_image(2, 50, 50, 1.7 * size, BLACK).convert_alpha()
+        timFireFrame4 = spriteSheetTimFire.get_image(3, 50, 50, 1.7 * size, BLACK).convert_alpha()
+
+        #bullet anim frames
+        bulletFrame1 = spriteSheetBullet.get_image(0, 10, 10, 3 * size, BLACK).convert_alpha()
+        bulletFrame2 = spriteSheetBullet.get_image(1, 10, 10, 3 * size, BLACK).convert_alpha()
+        bulletFrame3 = spriteSheetBullet.get_image(2, 10, 10, 3 * size, BLACK).convert_alpha()
+        bulletFrame4 = spriteSheetBullet.get_image(3, 10, 10, 3 * size, BLACK).convert_alpha()
+        bulletFrame5 = spriteSheetBullet.get_image(4, 10, 10, 3 * size, BLACK).convert_alpha()
+        bulletFrame6 = spriteSheetBullet.get_image(5, 10, 10, 3 * size, BLACK).convert_alpha()
+        bulletFrame7 = spriteSheetBullet.get_image(6, 10, 10, 3 * size, BLACK).convert_alpha()
+        bulletFrame8 = spriteSheetBullet.get_image(7, 10, 10, 3 * size, BLACK).convert_alpha()
+
+        timFrames = [timFrame1, timFrame2]
+        timFireFrames = [timFireFrame1, timFireFrame2, timFireFrame3, timFireFrame4]
+        bulletFrames = [bulletFrame1, bulletFrame2, bulletFrame3, bulletFrame4, bulletFrame5, bulletFrame6, bulletFrame7, bulletFrame8]
 
         if now - lastBulletSwitch > bulletFrameDelay:
             currentBulletFrame = (currentBulletFrame + 1) % len(bulletFrames)
@@ -324,10 +349,13 @@ while running:
             bullet(bullets[b][0], bullets[b][1], bulletFrames[currentBulletFrame])
             b = b + 1
 
-        if u%200/size == 0 and not gameover:
-            a = aln.AlienCube(oldX, oldY)
+        if u%10 * size == 0 and not gameover:
+            if utils.kills >= 10:
+                utils.kills=0
+                size = size - 0.05          
+            a = aln.AlienCube(oldX, oldY, size)
             aliens.append(a) 
-            a = aln.AlienCube(oldX, oldY)
+            a = aln.AlienCube(oldX, oldY, size)
             aliens.append(a) 
         
         for a in aliens:
@@ -335,7 +363,7 @@ while running:
             a.detectCollision(bullets)
             a.blit(screen)
             health, damageTaken = a.detectShipCollision(x,y, health)
-            if damageTaken:
+            if damageTaken: 
                 player_takes_damage()
             
         aliens[:] = [a for a in aliens if not a.isExperied()] 
