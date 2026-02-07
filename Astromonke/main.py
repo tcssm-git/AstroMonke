@@ -15,6 +15,7 @@ damaged_screen.fill((255, 0, 0))
 alpha = 0
 fade_speed = 2
 size = 2
+wave = 0
 fading = False
 fade_direction = 1
 gameover = False
@@ -99,6 +100,11 @@ decimalHealth = health/100
 
 textColor = (255, 255, 255)
 
+wavetxt = f"Wave: {str(wave)}"
+txtswing = font.render(wavetxt, True, textColor)  
+wavetxtRect = txtswing.get_rect()
+wavetxtRect.topleft = (0, 50)
+
 hptxt = f"Health: {int(decimalHealth*100)}"
 txtsfs = font.render(hptxt, True, textColor)  
 hptxtRect = txtsfs.get_rect()
@@ -116,6 +122,7 @@ def ship(i,j,a,whichFrame):
     if health > 0:
         screen.blit(pygame.transform.rotate(whichFrame, a), image_rect)
         screen.blit(txtsfs, hptxtRect)
+        screen.blit(txtswing, wavetxtRect)
 
 def bullet(i,j, whichFrame):
     image_rect = bulletimage.get_rect()
@@ -138,11 +145,13 @@ def tntcacaobelow():
 
 def textRect():
     if health > 0:
-        pygame.draw.rect(screen, (50, 50, 50), (screen_width - 250, 45, screen_width, 55), width = 0) 
+        pygame.draw.rect(screen, (67, 67, 67), (0, 45, screen_width, 55), width = 0) 
 
 def totch(): 
     hptxt = f"Health: {decimalHealth*100}"
     txtsfs = font.render(hptxt, True, textColor)
+    wavetxt = f"Wave: {str(wave)}"
+    txtswing = font.render(wavetxt, True, textColor)
     #hptxtRect = txtsfs.get_rect()
 
 bullets = []
@@ -225,7 +234,7 @@ while running:
                     if(m_x > (166) and m_x < (166 + dxx)) and (m_y > (698) and m_y < (698 + dyy)): #respawn
                         health = 100
                         gameover = False
-                        endButtonPressed = False
+                        endButtonPressed = False                  
                         aliens = []
                         bullets = []
                         angle = 0.01
@@ -349,7 +358,7 @@ while running:
             bullet(bullets[b][0], bullets[b][1], bulletFrames[currentBulletFrame])
             b = b + 1
 
-        if u%10 * size == 0 and not gameover:
+        if u%100 * size == 0 and not gameover:
             if utils.kills >= 10:
                 utils.kills=0
                 size = size - 0.05          
@@ -386,11 +395,15 @@ while running:
         else:
             hptxt = f"Health: {int(0)}"
         txtsfs = font.render(hptxt, True, textColor)  
+        txtswing = font.render(wavetxt, True, textColor) 
         hptxtRect = txtsfs.get_rect()
+        wavetxtRect = txtsfs.get_rect()
         hptxtRect.topright = (screen_width - 50, 50)
+        wavetxtRect.topright = (0, 50)
         tntcacaobelow()
         textRect()
-        screen.blit(txtsfs, hptxtRect)
+        screen.blit(txtswing, wavetxtRect)
+        screen.blit(txtsfs, hptxtRect)    
         tntcacao()
         totch()
         
