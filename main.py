@@ -399,19 +399,22 @@ while running:
             hptxt = f"Health: {int(decimalHealth*100)}"
         else:
             hptxt = f"Health: {int(0)}"
+            
+        killstxt = f"Kills: {str(utils.kills)}"
         txtsfs = font.render(hptxt, True, textColor)  
         txtswing = font.render(wavetxt, True, textColor) 
         txtshipK = font.render(killstxt, True, textColor) 
         hptxtRect = txtsfs.get_rect()
-        wavetxtRect = txtsfs.get_rect()
-        killstxtRect = txtsfs.get_rect()
+        wavetxtRect = txtswing.get_rect()
+        killstxtRect = txtshipK.get_rect()
         hptxtRect.topright = (screen_width - 50, 55)
         wavetxtRect.topleft = (50, 55)
         killstxtRect.topleft = (250, 55)
         tntcacaobelow()
         textRect()
         screen.blit(txtswing, wavetxtRect)
-        screen.blit(txtsfs, hptxtRect)    
+        screen.blit(txtsfs, hptxtRect)
+        screen.blit(txtshipK, killstxtRect)
         tntcacao()
         totch()
         
