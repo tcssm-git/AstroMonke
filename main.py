@@ -110,7 +110,7 @@ txtswing = font.render(wavetxt, True, textColor)
 wavetxtRect = txtswing.get_rect()
 wavetxtRect.topleft = (50, 55)
 
-killstxt = f"Kills: {str(utils.kills)}"
+killstxt = f"Kills: {str(utils.totalkills)}"
 txtshipK = font.render(killstxt, True, textColor)  
 killstxtRect = txtshipK.get_rect()
 killstxtRect.topleft = (250, 55)
@@ -400,7 +400,7 @@ while running:
         else:
             hptxt = f"Health: {int(0)}"
             
-        killstxt = f"Kills: {str(utils.kills)}"
+        killstxt = f"Kills: {str(utils.totalkills)}"
         txtsfs = font.render(hptxt, True, textColor)  
         txtswing = font.render(wavetxt, True, textColor) 
         txtshipK = font.render(killstxt, True, textColor) 
