@@ -61,7 +61,6 @@ class AlienCube:
         if self.now - self.lastJimSwitch > self.jimFrameDelay:
             self.currentJimFrame = (self.currentJimFrame + 1) % len(self.jimFrames)
             self.lastJimSwitch = self.now
-        #print(self.now)
         image_rect = self.jimFrames[self.currentJimFrame].get_rect()
         image_rect.x = self.x
         image_rect.y = self.y
@@ -84,13 +83,18 @@ class AlienCube:
     def isExperied(self):
         return self.expired
 
+#bullet collision detection
     def detectCollision(self, list):
-        for b in list: 
+        for b in list[:]: 
             if math.sqrt(((b[0] - self.x-40 * size) ** 2) + ((b[1] - self.y-30 * size) ** 2)) < 50 * size:
                 self.expired = True
                 utils.kills = utils.kills + 1
                 utils.totalkills = utils.totalkills + 1
+                if b in list:
+                    list.remove(b)
+                return
 
+#ship collision detection
     def detectShipCollision(self, shipx, shipy, health):
         if math.sqrt(((shipx+37 * size - self.x-40 * size) ** 2) + ((shipy+37 * size - self.y-30) ** 2)) < 60 * size:
             self.expired = True

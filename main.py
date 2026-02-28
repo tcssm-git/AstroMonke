@@ -18,6 +18,7 @@ size = 2
 wave = 0
 fading = False
 fade_direction = 1
+
 gameover = False
 damageTaken = False
 screen = pygame.display.set_mode((screen_width, screen_height))
@@ -28,7 +29,7 @@ ubegonnarespawnimage = pygame.transform.scale(pygame.image.load("Respawn_pressed
 ubegonnaexitimage = pygame.transform.scale(pygame.image.load("Exit_pressed.png"), (screen_width, screen_height)) #exit button pressed
 ubegoimage = pygame.transform.scale(pygame.image.load("Start screen.png"), (screen_width, screen_height)) #startscreen
 ubegonowimage = pygame.transform.scale(pygame.image.load("Start screen pressed.png"), (screen_width, screen_height)) #startscreen but pressed
-
+# player takes damage
 def player_takes_damage():
     global fading, fade_direction, alpha
     fading = True 
@@ -88,28 +89,45 @@ currentBulletFrame = 0
 bulletFrameDelay = 100
 lastBulletSwitch = pygame.time.get_ticks()
 
+#bullet ui
+ui_bulletSize = 20
+ui_bulletImage = spriteSheetBullet.get_image(7, 10, 10, 1.5, BLACK).convert_alpha()
+ui_bulletImageGray = ui_bulletImage.copy()
+ui_bulletImageGray.fill((100, 100, 100), special_flags = pygame.BLEND_RGB_MULT)
+
 #Timer system for 60fps
 clock = pygame.time.Clock()
 
 # Initialize Pygame
 pygame.init()
 
+# font rendering
 font = pygame.font.SysFont(None , 50)
 health = 100
 decimalHealth = health/100
 
 textColor = (255, 255, 255)
 
+# bullet logic
+max_ammo = 30
+ammo = max_ammo
+reloading = False
+reload_duration = 2000
+reload_start_time = 0
+
+# health text
 hptxt = f"Health: {int(decimalHealth*100)}"
 txtsfs = font.render(hptxt, True, textColor)  
 hptxtRect = txtsfs.get_rect()
 hptxtRect.topright = (screen_width - 10, 55)
 
+# wave text
 wavetxt = f"Wave: {str(wave)}"
 txtswing = font.render(wavetxt, True, textColor)  
 wavetxtRect = txtswing.get_rect()
 wavetxtRect.topleft = (50, 55)
 
+#kills text
 killstxt = f"Kills: {str(utils.totalkills)}"
 txtshipK = font.render(killstxt, True, textColor)  
 killstxtRect = txtshipK.get_rect()
@@ -119,6 +137,7 @@ killstxtRect.topleft = (250, 55)
 
 # Set window title
 pygame.display.set_caption("Minimal Pygame Example")
+
 
 def ship(i,j,a,whichFrame):
     image_rect = whichFrame.get_rect()
@@ -134,30 +153,30 @@ def bullet(i,j, whichFrame):
     image_rect.x = i
     image_rect.y = j
     if health > 0:
-        #screen.blit(bulletimage, image_rect)
-        #pygame.draw.circle(screen, (247, 151, 7), (i, j), 5)
         screen.blit(whichFrame, image_rect)
-        #screen.blit(txtsfs, hptxtRect)
+
 
 #We couldn't agree on a name, so I wrote "the name that we cant agree on", and turned that into the acronym "tntwcao" and that looked like "tntcacao", so that is the name of the variable. It is the rectangle for the healthbar
 def tntcacao():
     if decimalHealth > 0:
        pygame.draw.rect(screen, (255-decimalHealth*255, decimalHealth*255, 255), (10, 10, (screen_width-20)*decimalHealth, 25), width = 0)
 
+# rectangle below health bar
 def tntcacaobelow():
     if health > 0:
         pygame.draw.rect(screen, (50, 50, 50), (0, 0, screen_width, 45), width = 0)   
 
+# rectangle beneath text
 def textRect():
     if health > 0:
         pygame.draw.rect(screen, (67, 67, 67), (0, 45, screen_width, 55), width = 0) 
 
+# text rendering
 def totch(): 
     hptxt = f"Health: {decimalHealth*100}"
     txtsfs = font.render(hptxt, True, textColor)
     wavetxt = f"Wave: {str(wave)}"
     txtswing = font.render(wavetxt, True, textColor)
-    #hptxtRect = txtsfs.get_rect()
 
 bullets = []
 aliens = []
@@ -199,6 +218,7 @@ endButtonPressed = False
 if gamestarted == False and buttonPresssed == False:
     screen.blit(ubegoimage, (0,0))
 
+# framerate
 while running:
     now = pygame.time.get_ticks()
     clock.tick(125)
@@ -229,6 +249,7 @@ while running:
             gamestarted = True
     else:
 
+#ChatGPT code (DO NOT TOUCH)
         if gameover == True:
             aliens = []
             if endButtonPressed == False:
@@ -295,7 +316,7 @@ while running:
             currentBulletFrame = (currentBulletFrame + 1) % len(bulletFrames)
             lastBulletSwitch = now
     
-        # Handle events
+        # Handle events (quitting game, creating bullets)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -382,6 +403,7 @@ while running:
             
         aliens[:] = [a for a in aliens if not a.isExperied()] 
 
+# bullets exiting screen
         o = 0
         while(o<len(bullets)-1):
             if bullets[o][0] < 0:
