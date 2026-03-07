@@ -93,7 +93,7 @@ lastBulletSwitch = pygame.time.get_ticks()
 ui_bulletSize = 20
 ui_bulletImage = spriteSheetBullet.get_image(7, 10, 10, 1.5, BLACK).convert_alpha()
 ui_bulletImageGray = ui_bulletImage.copy()
-ui_bulletImageGray.fill((100, 100, 100), special_flags = pygame.BLEND_RGB_MULT)
+ui_bulletImageGray.fill((75, 75, 75), special_flags = pygame.BLEND_RGB_MULT)
 
 #Timer system for 60fps
 clock = pygame.time.Clock()
@@ -112,7 +112,7 @@ textColor = (255, 255, 255)
 max_ammo = 30
 ammo = max_ammo
 reloading = False
-reload_duration = 2000
+reload_duration = 5000
 reload_start_time = 0
 
 # health text
@@ -263,6 +263,8 @@ while running:
                         endButtonPressed = False                  
                         aliens = []
                         bullets = []
+                        ammo = max_ammo
+                        reloading = False
                         angle = 0.01
                         x, y = screen_width/2, screen_height/2 
                         size = 2
@@ -270,12 +272,13 @@ while running:
                         gamestarted = False
                         buttonPresssed = False
                         buttonDelay = 0
-                        
                         health = 100
                         decimalHealth = 1.0
                         gameover = False
                         endButtonPressed = False
                         bullets = []
+                        ammo = max_ammo
+                        reloading = False
                         aliens = []
                         angle = 0.01
                         x, y = screen_width/2, screen_height/2                                                                      
@@ -322,7 +325,13 @@ while running:
                 running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    bullets.append((x+37*size,y+37*size,dx*s,dy*s))
+                    if ammo > 0 and not reloading:
+                        bullets.append((x+37*size,y+37*size,dx*s,dy*s))
+                        ammo = ammo - 1
+                elif event.key == pygame.K_r:
+                    if ammo == 0 and not reloading:
+                        reloading = True
+                        reload_start_time = pygame.time.get_ticks()
        
         if fading:
             alpha += fade_speed * fade_direction
@@ -439,10 +448,33 @@ while running:
         screen.blit(txtshipK, killstxtRect)
         tntcacao()
         totch()
-        
+        #reload loigic
+        if reloading:
+            current_time = pygame.time.get_ticks()
+            if current_time - reload_start_time >= reload_duration:
+                ammo = max_ammo
+                reloading = False
+
+        ui_start_x = screen_width - 30
+        ui_start_y = screen_height - 50
+        ui_spacing = 5
         oldY = y
         oldX = x
     
+        bullets_to_show = ammo
+        if reloading:
+            current_time = pygame.time.get_ticks()
+            progress = min((current_time - reload_start_time)/ reload_duration, 1.0)
+            bullets_to_show = int(max_ammo * progress)
+
+        for i in range(max_ammo):
+            pos_x = ui_start_x
+            pos_y = ui_start_y - i * (ui_bulletSize + ui_spacing)
+            if i < bullets_to_show:
+                screen.blit(ui_bulletImage, (pos_x, pos_y))
+            else:
+                 screen.blit(ui_bulletImageGray, (pos_x, pos_y))
+
             # Update the display   
         pygame.display.flip()
         u = u + 1
