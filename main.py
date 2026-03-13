@@ -7,6 +7,7 @@ import alien as aln
 import tim
 import time
 import utils
+import Heath as hth
 
 screen_width = 1920
 screen_height = 1020
@@ -180,6 +181,7 @@ def totch():
 
 bullets = []
 aliens = []
+heathi = []
 
 #                                                      w.|W.w|w
 #                                                      / . , .\
@@ -248,40 +250,6 @@ while running:
         if buttonDelay > 25:
             gamestarted = True
     else:
-
-#ChatGPT code (DO NOT TOUCH)
-        if gameover == True:
-            aliens = []
-            if endButtonPressed == False:
-                screen.blit(ubededimage, (0,0))
-            for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    m_x, m_y = pygame.mouse.get_pos()
-                    if(m_x > (166) and m_x < (166 + dxx)) and (m_y > (698) and m_y < (698 + dyy)): #respawn
-                        health = 100
-                        gameover = False
-                        endButtonPressed = False                  
-                        aliens = []
-                        bullets = []
-                        ammo = max_ammo
-                        reloading = False
-                        angle = 0.01
-                        x, y = screen_width/2, screen_height/2 
-                        size = 2
-                    if(m_x > (1100) and m_x < (1100 + dxx)) and (m_y > (698) and m_y < (698 + dyy)): #exit to menu
-                        gamestarted = False
-                        buttonPresssed = False
-                        buttonDelay = 0
-                        health = 100
-                        decimalHealth = 1.0
-                        gameover = False
-                        endButtonPressed = False
-                        bullets = []
-                        ammo = max_ammo
-                        reloading = False
-                        aliens = []
-                        angle = 0.01
-                        x, y = screen_width/2, screen_height/2                                                                      
 
         if gameover==False:
             screen.blit(thumbimage, (0,0))
@@ -411,6 +379,20 @@ while running:
                 player_takes_damage()
             
         aliens[:] = [a for a in aliens if not a.isExperied()] 
+        
+        if u%100 * size == 0 and not gameover:
+            if utils.kills >= 10:
+                utils.kills=0
+                size = size - 0.05          
+            h = hth.Heath(size)
+            heathi.append(h) 
+            h = hth.Heath(size)
+            heathi.append(h) 
+        
+        for h in heathi:
+            h.blit(screen)
+            health, damageTaken = h.detectShipCollision(x,y, health, heathi)
+            
 
 # bullets exiting screen
         o = 0
@@ -474,6 +456,40 @@ while running:
                 screen.blit(ui_bulletImage, (pos_x, pos_y))
             else:
                  screen.blit(ui_bulletImageGray, (pos_x, pos_y))
+
+#ChatGPT code (DO NOT TOUCH)
+        if gameover == True:
+            aliens = []
+            if endButtonPressed == False:
+                screen.blit(ubededimage, (0,0))
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    m_x, m_y = pygame.mouse.get_pos()
+                    if(m_x > (166) and m_x < (166 + dxx)) and (m_y > (698) and m_y < (698 + dyy)): #respawn
+                        health = 100
+                        gameover = False
+                        endButtonPressed = False                  
+                        aliens = []
+                        bullets = []
+                        ammo = max_ammo
+                        reloading = False
+                        angle = 0.01
+                        x, y = screen_width/2, screen_height/2 
+                        size = 2
+                    if(m_x > (1100) and m_x < (1100 + dxx)) and (m_y > (698) and m_y < (698 + dyy)): #exit to menu
+                        gamestarted = False
+                        buttonPresssed = False
+                        buttonDelay = 0
+                        health = 100
+                        decimalHealth = 1.0
+                        gameover = False
+                        endButtonPressed = False
+                        bullets = []
+                        ammo = max_ammo
+                        reloading = False
+                        aliens = []
+                        angle = 0.01
+                        x, y = screen_width/2, screen_height/2                                                                      
 
             # Update the display   
         pygame.display.flip()
