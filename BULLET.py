@@ -9,7 +9,3 @@ class Bullet:
         self.vx = _vx
         self.vy = _vy
         self.id = random.randint(-999, 999)
-
-       
-
-    

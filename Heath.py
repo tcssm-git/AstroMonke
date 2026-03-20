@@ -16,6 +16,7 @@ class Heath:
         self.y = random.randint(0, screen_height)
 
         self.heathImage = pygame.image.load("Heath_Ledger_(2).jpg").convert_alpha() #alien sprite
+        self.heathImage = pygame.transform.scale(pygame.image.load("Heath_Ledger_(2).jpg"), (30, 60))
 
         BLACK = (0, 0, 0)
 
@@ -29,12 +30,12 @@ class Heath:
         image_rect.y = self.y
         screen.blit(self.heathImage, image_rect)
     
-
-
 #bullet collision detection
     def detectCollision(self, list):
+        hitbox = self.heathImage.get_rect(topleft=(self.x, self.y))
         for b in list[:]: 
-            if math.sqrt(((b[0] - self.x-40 * size) ** 2) + ((b[1] - self.y-30 * size) ** 2)) < 50 * size:
+            bullet_rect = pygame.Rect(b[0], b[1], 10, 10)
+            if hitbox.colliderect(bullet_rect):
                 self.expired = True
                 if b in list:
                     list.remove(b)
@@ -42,10 +43,11 @@ class Heath:
 
 #ship collision detection
     def detectShipCollision(self, shipx, shipy, health, list):
-        if math.sqrt(((shipx+37 * size - self.x-40 * size) ** 2) + ((shipy+37 * size - self.y-30) ** 2)) < 60 * size:
-            self.expired = True
+        hitbox = self.heathImage.get_rect(topleft=(self.x, self.y))
+        ship_size_approx = 50 * 1.7 * size
+        ship_rect = pygame.Rect(shipx, shipy, ship_size_approx, ship_size_approx)
+
+        if hitbox.colliderect(ship_rect):
             if health < 100:
                 return health + 5, True
-
-
         return health, False

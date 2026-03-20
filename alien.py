@@ -79,7 +79,6 @@ class AlienCube:
         elif self.y > screen_height:
             self.expired = True
 
-
     def isExperied(self):
         return self.expired
 
@@ -100,8 +99,4 @@ class AlienCube:
             self.expired = True
             return health - 5, True
 
-        return health, False
-    
-
-
-               
+        return health, False          

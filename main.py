@@ -139,7 +139,6 @@ killstxtRect.topleft = (250, 55)
 # Set window title
 pygame.display.set_caption("Minimal Pygame Example")
 
-
 def ship(i,j,a,whichFrame):
     image_rect = whichFrame.get_rect()
     image_rect.x = i
@@ -155,7 +154,6 @@ def bullet(i,j, whichFrame):
     image_rect.y = j
     if health > 0:
         screen.blit(whichFrame, image_rect)
-
 
 #We couldn't agree on a name, so I wrote "the name that we cant agree on", and turned that into the acronym "tntwcao" and that looked like "tntcacao", so that is the name of the variable. It is the rectangle for the healthbar
 def tntcacao():
@@ -361,7 +359,7 @@ while running:
             bullet(bullets[b][0], bullets[b][1], bulletFrames[currentBulletFrame])
             b = b + 1
 
-        if u%100 * size == 0 and not gameover:
+        if u>0 and u%100 * size == 0 and not gameover:
             if utils.kills >= 10:
                 utils.kills=0
                 size = size - 0.05          
@@ -380,21 +378,19 @@ while running:
             
         aliens[:] = [a for a in aliens if not a.isExperied()] 
         
-        if u%100 * size == 0 and not gameover:
+        if u>0 and u%100 * size == 0 and not gameover:
             if utils.kills >= 10:
                 utils.kills=0
                 size = size - 0.05          
             h = hth.Heath(size)
             heathi.append(h) 
-            h = hth.Heath(size)
-            heathi.append(h) 
-        
+            
         for h in heathi:
             h.blit(screen)
+            h.detectCollision(bullets)
             health, damageTaken = h.detectShipCollision(x,y, health, heathi)
             
-
-# bullets exiting screen
+        heathi[:] = [h for h in heathi if not h.expired]
         o = 0
         while(o<len(bullets)-1):
             if bullets[o][0] < 0:
