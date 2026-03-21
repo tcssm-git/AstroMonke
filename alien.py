@@ -8,6 +8,9 @@ screen_width = 1920
 screen_height = 1020
 size = 2
 
+# Set True to draw collision rect (sprite bounds = bullet + ship hit area)
+SHOW_ALIEN_HITBOX = False
+
 base_speed = 2  # Aliens move 2 pixels per frame
 
 class AlienCube:
@@ -50,6 +53,7 @@ class AlienCube:
         jimFrame2 = spriteSheetJim.get_image(1, 50, 50, 1.7 * size, BLACK).convert_alpha()
 
         self.jimFrames = [jimFrame1, jimFrame2]
+        self.jimMasks = [pygame.mask.from_surface(f) for f in self.jimFrames]
         self.currentJimFrame = 0
         self.jimFrameDelay = 600
         self.lastJimSwitch = pygame.time.get_ticks()
@@ -65,6 +69,18 @@ class AlienCube:
         image_rect.x = self.x
         image_rect.y = self.y
         screen.blit(self.jimFrames[self.currentJimFrame], image_rect)
+        if SHOW_ALIEN_HITBOX:
+            r = self._hit_rect()
+            my_mask = self.jimMasks[self.currentJimFrame]
+            outline = my_mask.outline()
+            if len(outline) > 2:
+                points = [(p[0] + r.left, p[1] + r.top) for p in outline]
+                pygame.draw.polygon(screen, (0, 220, 255), points, 2)
+
+    def _hit_rect(self):
+        """Sprite bounds — same rect used for bullet and ship collision."""
+        surf = self.jimFrames[self.currentJimFrame]
+        return surf.get_rect(topleft=(int(self.x), int(self.y)))
 
     def move(self):
         self.x = self.x + self.vx
@@ -82,21 +98,30 @@ class AlienCube:
     def isExperied(self):
         return self.expired
 
-#bullet collision detection
-    def detectCollision(self, list):
-        for b in list[:]: 
-            if math.sqrt(((b[0] - self.x-40 * size) ** 2) + ((b[1] - self.y-30 * size) ** 2)) < 50 * size:
+    def detectCollision(self, bullets_data, bullets_list):
+        my_rect = self._hit_rect()
+        my_mask = self.jimMasks[self.currentJimFrame]
+
+        for b_data in bullets_data[:]:
+            b_rect, b_mask, b_tuple = b_data
+            if my_rect.colliderect(b_rect):
+                offset = (b_rect.left - my_rect.left, b_rect.top - my_rect.top)
+                if my_mask.overlap(b_mask, offset):
+                    self.expired = True
+                    utils.kills = utils.kills + 1
+                    utils.totalkills = utils.totalkills + 1
+                    if b_tuple in bullets_list:
+                        bullets_list.remove(b_tuple)
+                    bullets_data.remove(b_data)
+                    return
+
+    def detectShipCollision(self, ship_rect, ship_mask, health):
+        my_rect = self._hit_rect()
+        my_mask = self.jimMasks[self.currentJimFrame]
+        
+        if my_rect.colliderect(ship_rect):
+            offset = (ship_rect.left - my_rect.left, ship_rect.top - my_rect.top)
+            if my_mask.overlap(ship_mask, offset):
                 self.expired = True
-                utils.kills = utils.kills + 1
-                utils.totalkills = utils.totalkills + 1
-                if b in list:
-                    list.remove(b)
-                return
-
-#ship collision detection
-    def detectShipCollision(self, shipx, shipy, health):
-        if math.sqrt(((shipx+37 * size - self.x-40 * size) ** 2) + ((shipy+37 * size - self.y-30) ** 2)) < 60 * size:
-            self.expired = True
-            return health - 5, True
-
-        return health, False          
+                return health - 5, True
+        return health, False
