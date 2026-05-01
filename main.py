@@ -1,4 +1,15 @@
 #  ͡( ͡° ͜ʖ ͡°)   <---- Lord Lenny
+# Checklist/brainstorming:
+#Waves (every 5 waves a new alien is introduced [bossfight every 10 waves])
+#Sound effects
+#Bosses follow player
+#"Boom" and other sound effect animations
+#Custom Skins + Skin changer menu
+#Score system
+#Different background and different track every 10 waves
+#Ends at wave 50 with final boss
+#All the rest of the pixel arts :(
+
 
 import pygame
 import math
@@ -9,6 +20,7 @@ import time
 import utils
 import Heath as hth
 
+pygame.mixer.init()
 screen_width = 1920
 screen_height = 1020
 damaged_screen = pygame.Surface((screen_width, screen_height))
@@ -19,6 +31,11 @@ size = 2
 wave = 0
 fading = False
 fade_direction = 1
+backgroundMusic1 = pygame.mixer.Sound("bgTrack1.wav")
+timShootingNoise = pygame.mixer.Sound("Shot.wav")
+damageNoise = pygame.mixer.Sound("Damage.wav")
+healNoise = pygame.mixer.Sound("Heal.wav")
+deathNoise = pygame.mixer.Sound("AlienHeathDeath.wav")
 
 gameover = False
 damageTaken = False
@@ -240,15 +257,17 @@ while running:
         if buttonPresssed:
             buttonDelay += 1
             if buttonDelay > 25:
+                backgroundMusic1.play(loops = -1)
                 gamestarted = True
         
         pygame.display.flip() # Keep the menu updating
         if buttonPresssed:   #for play button
             buttonDelay += 1
         if buttonDelay > 25:
+            backgroundMusic1.play(loops = -1)
             gamestarted = True
+            
     else:
-
         if gameover==False:
             screen.blit(thumbimage, (0,0))
 
@@ -256,7 +275,8 @@ while running:
 
         if health <= 0:
             gameover = True
-
+            pygame.mixer.stop()
+        """
         #player anim frames
         timFrame1 = spriteSheetTim.get_image(0, 50, 50, 1.7 * size, BLACK).convert_alpha()
         timFrame2 = spriteSheetTim.get_image(1, 50, 50, 1.7 * size, BLACK).convert_alpha()
@@ -280,7 +300,7 @@ while running:
         timFrames = [timFrame1, timFrame2]
         timFireFrames = [timFireFrame1, timFireFrame2, timFireFrame3, timFireFrame4]
         bulletFrames = [bulletFrame1, bulletFrame2, bulletFrame3, bulletFrame4, bulletFrame5, bulletFrame6, bulletFrame7, bulletFrame8]
-
+        """
         if now - lastBulletSwitch > bulletFrameDelay:
             currentBulletFrame = (currentBulletFrame + 1) % len(bulletFrames)
             lastBulletSwitch = now
@@ -378,7 +398,7 @@ while running:
             
         aliens[:] = [a for a in aliens if not a.isExperied()] 
         
-        if u>0 and u%100 * size == 0 and not gameover:
+        if u>0 and u%1000 * size == 0 and not gameover:
             if utils.kills >= 10:
                 utils.kills=0
                 size = size - 0.05          
@@ -472,6 +492,8 @@ while running:
                         angle = 0.01
                         x, y = screen_width/2, screen_height/2 
                         size = 2
+                        backgroundMusic1.play(loops = -1)
+                        heathi = []
                     if(m_x > (1100) and m_x < (1100 + dxx)) and (m_y > (698) and m_y < (698 + dyy)): #exit to menu
                         gamestarted = False
                         buttonPresssed = False
@@ -485,7 +507,8 @@ while running:
                         reloading = False
                         aliens = []
                         angle = 0.01
-                        x, y = screen_width/2, screen_height/2                                                                      
+                        x, y = screen_width/2, screen_height/2  
+                        heathi = []                                                                    
 
             # Update the display   
         pygame.display.flip()

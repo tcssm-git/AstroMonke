@@ -4,9 +4,11 @@ import random
 import tim
 import utils
 
+pygame.mixer.init()
 screen_width = 1920
 screen_height = 1020
 size = 2
+damageNoise = pygame.mixer.Sound("Damage.wav")
 
 base_speed = 2  # Aliens move 2 pixels per frame
 
@@ -97,6 +99,7 @@ class AlienCube:
     def detectShipCollision(self, shipx, shipy, health):
         if math.sqrt(((shipx+37 * size - self.x-40 * size) ** 2) + ((shipy+37 * size - self.y-30) ** 2)) < 60 * size:
             self.expired = True
+            damageNoise.play()
             return health - 5, True
 
         return health, False          

@@ -48,6 +48,9 @@ class Heath:
         ship_rect = pygame.Rect(shipx, shipy, ship_size_approx, ship_size_approx)
 
         if hitbox.colliderect(ship_rect):
-            if health < 100:
-                return health + 5, True
+            self.expired = True
+            if health <= 100-12:
+                return health + 12, True
+            else:
+                return 100, True
         return health, False
