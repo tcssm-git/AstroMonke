@@ -29,6 +29,10 @@ alpha = 0
 fade_speed = 2
 size = 2
 wave = 0
+
+# Set True to draw ship collision rect (same as Heath.detectShipCollision)
+SHOW_SHIP_HITBOX = False
+SHOW_BULLET_HITBOX = False
 fading = False
 fade_direction = 1
 backgroundMusic1 = pygame.mixer.Sound("bgTrack1.wav")
@@ -156,21 +160,51 @@ killstxtRect.topleft = (250, 55)
 # Set window title
 pygame.display.set_caption("Minimal Pygame Example")
 
+mask_cache = {}
+
+def get_rotated_data(surface, angle):
+    angle_key = round(angle % 360)
+    surf_id = id(surface)
+    if (surf_id, angle_key) not in mask_cache:
+        rotated_surface = pygame.transform.rotate(surface, angle_key)
+        rotated_mask = pygame.mask.from_surface(rotated_surface)
+        mask_cache[(surf_id, angle_key)] = (rotated_surface, rotated_mask)
+    return mask_cache[(surf_id, angle_key)]
+
+def get_ship_data(i, j, a, whichFrame):
+    # i, j is the top-left of the original unrotated ship
+    rotated_surface, rotated_mask = get_rotated_data(whichFrame, a)
+    original_rect = whichFrame.get_rect(topleft=(int(i), int(j)))
+    rotated_rect = rotated_surface.get_rect(center=original_rect.center)
+    
+    return rotated_surface, rotated_rect, rotated_mask
+
 def ship(i,j,a,whichFrame):
-    image_rect = whichFrame.get_rect()
-    image_rect.x = i
-    image_rect.y = j
     if health > 0:
-        screen.blit(pygame.transform.rotate(whichFrame, a), image_rect)
+        rotated_surface, rotated_rect, rotated_mask = get_ship_data(i, j, a, whichFrame)
+        screen.blit(rotated_surface, rotated_rect.topleft)
         screen.blit(txtsfs, hptxtRect)
         screen.blit(txtswing, wavetxtRect)
+        if SHOW_SHIP_HITBOX:
+            outline = rotated_mask.outline()
+            if len(outline) > 2:
+                points = [(p[0] + rotated_rect.left, p[1] + rotated_rect.top) for p in outline]
+                pygame.draw.polygon(screen, (255, 255, 0), points, 2)
 
-def bullet(i,j, whichFrame):
-    image_rect = bulletimage.get_rect()
-    image_rect.x = i
-    image_rect.y = j
+def bullet(i, j, whichFrame, a):
+    rotated_surface, rotated_mask = get_rotated_data(whichFrame, a)
+    original_rect = whichFrame.get_rect(topleft=(int(i), int(j)))
+    rotated_rect = rotated_surface.get_rect(center=original_rect.center)
+    
     if health > 0:
-        screen.blit(whichFrame, image_rect)
+        screen.blit(rotated_surface, rotated_rect.topleft)
+        if SHOW_BULLET_HITBOX:
+            outline = rotated_mask.outline()
+            if len(outline) > 2:
+                points = [(p[0] + rotated_rect.left, p[1] + rotated_rect.top) for p in outline]
+                pygame.draw.polygon(screen, (255, 0, 0), points, 2)
+            
+    return rotated_surface, rotated_rect, rotated_mask
 
 #We couldn't agree on a name, so I wrote "the name that we cant agree on", and turned that into the acronym "tntwcao" and that looked like "tntcacao", so that is the name of the variable. It is the rectangle for the healthbar
 def tntcacao():
@@ -275,6 +309,7 @@ while running:
 
         if health <= 0:
             gameover = True
+<<<<<<< HEAD
             pygame.mixer.stop()
         """
         #player anim frames
@@ -301,6 +336,9 @@ while running:
         timFireFrames = [timFireFrame1, timFireFrame2, timFireFrame3, timFireFrame4]
         bulletFrames = [bulletFrame1, bulletFrame2, bulletFrame3, bulletFrame4, bulletFrame5, bulletFrame6, bulletFrame7, bulletFrame8]
         """
+=======
+
+>>>>>>> 8745aabe7105a59b2c9abc2e9ad046a309caa8f5
         if now - lastBulletSwitch > bulletFrameDelay:
             currentBulletFrame = (currentBulletFrame + 1) % len(bulletFrames)
             lastBulletSwitch = now
@@ -312,7 +350,7 @@ while running:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     if ammo > 0 and not reloading:
-                        bullets.append((x+37*size,y+37*size,dx*s,dy*s))
+                        bullets.append((x+37*size,y+37*size,dx*s,dy*s, angle))
                         ammo = ammo - 1
                 elif event.key == pygame.K_r:
                     if ammo == 0 and not reloading:
@@ -369,14 +407,19 @@ while running:
             lastTimFireSwitch = now
 
         if timMoving:
-            ship(x,y,angle,timFireFrames[currentTimFireFrame])
+            ship_frame = timFireFrames[currentTimFireFrame]
         else:
-            ship(x,y,angle,timFrames[currentTimFrame])
+            ship_frame = timFrames[currentTimFrame]
+        
+        ship(x, y, angle, ship_frame)
+        ship_surface, ship_rect, ship_mask = get_ship_data(x, y, angle, ship_frame)
 
         b = 0
+        active_bullets_data = []
         while((b)<len(bullets)):
-            bullets[b] = (bullets[b][0]+bullets[b][2], bullets[b][1]+bullets[b][3], bullets[b][2], bullets[b][3])
-            bullet(bullets[b][0], bullets[b][1], bulletFrames[currentBulletFrame])
+            bullets[b] = (bullets[b][0]+bullets[b][2], bullets[b][1]+bullets[b][3], bullets[b][2], bullets[b][3], bullets[b][4])
+            b_surf, b_rect, b_mask = bullet(bullets[b][0], bullets[b][1], bulletFrames[currentBulletFrame], bullets[b][4])
+            active_bullets_data.append((b_rect, b_mask, bullets[b]))
             b = b + 1
 
         if u>0 and u%100 * size == 0 and not gameover:
@@ -390,9 +433,9 @@ while running:
         
         for a in aliens:
             a.move()
-            a.detectCollision(bullets)
+            a.detectCollision(active_bullets_data, bullets)
             a.blit(screen)
-            health, damageTaken = a.detectShipCollision(x,y, health)
+            health, damageTaken = a.detectShipCollision(ship_rect, ship_mask, health)
             if damageTaken: 
                 player_takes_damage()
             
@@ -407,8 +450,8 @@ while running:
             
         for h in heathi:
             h.blit(screen)
-            h.detectCollision(bullets)
-            health, damageTaken = h.detectShipCollision(x,y, health, heathi)
+            h.detectCollision(active_bullets_data, bullets)
+            health, damageTaken = h.detectShipCollision(ship_rect, ship_mask, health)
             
         heathi[:] = [h for h in heathi if not h.expired]
         o = 0
