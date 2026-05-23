@@ -101,6 +101,7 @@ class AlienCube:
         return self.expired
 
     def detectCollision(self, bullets_data, bullets_list):
+        damageNoise.play
         my_rect = self._hit_rect()
         my_mask = self.jimMasks[self.currentJimFrame]
 
@@ -120,27 +121,13 @@ class AlienCube:
     def detectShipCollision(self, ship_rect, ship_mask, health):
         my_rect = self._hit_rect()
         my_mask = self.jimMasks[self.currentJimFrame]
-        
         if my_rect.colliderect(ship_rect):
             offset = (ship_rect.left - my_rect.left, ship_rect.top - my_rect.top)
             if my_mask.overlap(ship_mask, offset):
                 self.expired = True
-<<<<<<< HEAD
-                utils.kills = utils.kills + 1
-                utils.totalkills = utils.totalkills + 1
-                if b in list:
-                    list.remove(b)
-                return
-
-#ship collision detection
-    def detectShipCollision(self, shipx, shipy, health):
-        if math.sqrt(((shipx+37 * size - self.x-40 * size) ** 2) + ((shipy+37 * size - self.y-30) ** 2)) < 60 * size:
-            self.expired = True
-            damageNoise.play()
-            return health - 5, True
-
-        return health, False          
-=======
+                damageNoise.play()
                 return health - 5, True
+
         return health, False
->>>>>>> 8745aabe7105a59b2c9abc2e9ad046a309caa8f5
+
+

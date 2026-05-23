@@ -20,6 +20,7 @@ import time
 import utils
 import Heath as hth
 
+pygame.init()
 pygame.mixer.init()
 screen_width = 1920
 screen_height = 1020
@@ -38,8 +39,9 @@ fade_direction = 1
 backgroundMusic1 = pygame.mixer.Sound("bgTrack1.wav")
 timShootingNoise = pygame.mixer.Sound("Shot.wav")
 damageNoise = pygame.mixer.Sound("Damage.wav")
-healNoise = pygame.mixer.Sound("Heal.wav")
+heathNoise = pygame.mixer.Sound("Heal.wav")
 deathNoise = pygame.mixer.Sound("AlienHeathDeath.wav")
+timDeathNoise = pygame.mixer.Sound("deathCrashout.wav")
 
 gameover = False
 damageTaken = False
@@ -53,7 +55,7 @@ ubegoimage = pygame.transform.scale(pygame.image.load("Start screen.png"), (scre
 ubegonowimage = pygame.transform.scale(pygame.image.load("Start screen pressed.png"), (screen_width, screen_height)) #startscreen but pressed
 # player takes damage
 def player_takes_damage():
-    global fading, fade_direction, alpha
+    global fading, fade_direction, alpha, damageTaken
     fading = True 
     fade_direction = 1
     alpha = 0
@@ -117,11 +119,9 @@ ui_bulletImage = spriteSheetBullet.get_image(7, 10, 10, 1.5, BLACK).convert_alph
 ui_bulletImageGray = ui_bulletImage.copy()
 ui_bulletImageGray.fill((75, 75, 75), special_flags = pygame.BLEND_RGB_MULT)
 
-#Timer system for 60fps
+# Initialize Pygame (already initialized above)
+# Timer system for 60fps
 clock = pygame.time.Clock()
-
-# Initialize Pygame
-pygame.init()
 
 # font rendering
 font = pygame.font.SysFont(None , 50)
@@ -287,11 +287,12 @@ while running:
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     buttonPresssed = True
-            
+                                
         if buttonPresssed:
             buttonDelay += 1
             if buttonDelay > 25:
                 backgroundMusic1.play(loops = -1)
+                backgroundMusic1.set_volume(0.6)
                 gamestarted = True
         
         pygame.display.flip() # Keep the menu updating
@@ -299,6 +300,7 @@ while running:
             buttonDelay += 1
         if buttonDelay > 25:
             backgroundMusic1.play(loops = -1)
+            backgroundMusic1.set_volume(0.6)
             gamestarted = True
             
     else:
@@ -309,36 +311,9 @@ while running:
 
         if health <= 0:
             gameover = True
-<<<<<<< HEAD
             pygame.mixer.stop()
-        """
-        #player anim frames
-        timFrame1 = spriteSheetTim.get_image(0, 50, 50, 1.7 * size, BLACK).convert_alpha()
-        timFrame2 = spriteSheetTim.get_image(1, 50, 50, 1.7 * size, BLACK).convert_alpha()
+     
 
-        #palyer moving anim frames
-        timFireFrame1 = spriteSheetTimFire.get_image(0, 50, 50, 1.7 * size, BLACK).convert_alpha()
-        timFireFrame2 = spriteSheetTimFire.get_image(1, 50, 50, 1.7 * size, BLACK).convert_alpha()
-        timFireFrame3 = spriteSheetTimFire.get_image(2, 50, 50, 1.7 * size, BLACK).convert_alpha()
-        timFireFrame4 = spriteSheetTimFire.get_image(3, 50, 50, 1.7 * size, BLACK).convert_alpha()
-
-        #bullet anim frames
-        bulletFrame1 = spriteSheetBullet.get_image(0, 10, 10, 3 * size, BLACK).convert_alpha()
-        bulletFrame2 = spriteSheetBullet.get_image(1, 10, 10, 3 * size, BLACK).convert_alpha()
-        bulletFrame3 = spriteSheetBullet.get_image(2, 10, 10, 3 * size, BLACK).convert_alpha()
-        bulletFrame4 = spriteSheetBullet.get_image(3, 10, 10, 3 * size, BLACK).convert_alpha()
-        bulletFrame5 = spriteSheetBullet.get_image(4, 10, 10, 3 * size, BLACK).convert_alpha()
-        bulletFrame6 = spriteSheetBullet.get_image(5, 10, 10, 3 * size, BLACK).convert_alpha()
-        bulletFrame7 = spriteSheetBullet.get_image(6, 10, 10, 3 * size, BLACK).convert_alpha()
-        bulletFrame8 = spriteSheetBullet.get_image(7, 10, 10, 3 * size, BLACK).convert_alpha()
-
-        timFrames = [timFrame1, timFrame2]
-        timFireFrames = [timFireFrame1, timFireFrame2, timFireFrame3, timFireFrame4]
-        bulletFrames = [bulletFrame1, bulletFrame2, bulletFrame3, bulletFrame4, bulletFrame5, bulletFrame6, bulletFrame7, bulletFrame8]
-        """
-=======
-
->>>>>>> 8745aabe7105a59b2c9abc2e9ad046a309caa8f5
         if now - lastBulletSwitch > bulletFrameDelay:
             currentBulletFrame = (currentBulletFrame + 1) % len(bulletFrames)
             lastBulletSwitch = now
@@ -352,6 +327,7 @@ while running:
                     if ammo > 0 and not reloading:
                         bullets.append((x+37*size,y+37*size,dx*s,dy*s, angle))
                         ammo = ammo - 1
+                        timShootingNoise.play()
                 elif event.key == pygame.K_r:
                     if ammo == 0 and not reloading:
                         reloading = True
@@ -517,7 +493,7 @@ while running:
                  screen.blit(ui_bulletImageGray, (pos_x, pos_y))
 
 #ChatGPT code (DO NOT TOUCH)
-        if gameover == True:
+        if gameover == True:            
             aliens = []
             if endButtonPressed == False:
                 screen.blit(ubededimage, (0,0))

@@ -4,9 +4,12 @@ import random
 import tim
 import utils
 
+pygame.mixer.init()
 screen_width = 1920
 screen_height = 1020
 size = 2
+heathNoise = pygame.mixer.Sound("Heal.wav")
+damageNoise = pygame.mixer.Sound("Damage.wav")
 
 # Set True to draw the collision rect (same as bullet/ship checks)
 SHOW_HEATH_HITBOX = False
@@ -61,19 +64,11 @@ class Heath:
         my_rect = self.heathImage.get_rect(topleft=(self.x, self.y))
         my_mask = self.heathMask
 
-<<<<<<< HEAD
-        if hitbox.colliderect(ship_rect):
+        if my_rect.colliderect(ship_rect):
             self.expired = True
+            heathNoise.play()
             if health <= 100-12:
                 return health + 12, True
             else:
                 return 100, True
-=======
-        if my_rect.colliderect(ship_rect):
-            offset = (ship_rect.left - my_rect.left, ship_rect.top - my_rect.top)
-            if my_mask.overlap(ship_mask, offset):
-                self.expired = True
-                if health < 100:
-                    return health + 5, True
->>>>>>> 8745aabe7105a59b2c9abc2e9ad046a309caa8f5
         return health, False
