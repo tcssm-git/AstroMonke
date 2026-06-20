@@ -14,14 +14,19 @@ damageNoise = pygame.mixer.Sound("Damage.wav")
 SHOW_ALIEN_HITBOX = False
 
 base_speed = 2  # Aliens move 2 pixels per frame
+jimboomimage = pygame.transform.scale(pygame.image.load("Big_BOOM_temp.png"), (500, 500)) #BOOM
 
 class AlienCube:
     def __init__(self, shipx, shipy, alienSize):
         self.vx = 0
         self.vy = 0
+        self.x = 0
+        self.y = 0
+        self.expired = False
         size = alienSize
 
-        e = random.randint(0,3)
+        e = random.randint(0, 3)
+
         if e == 0:#bottom
             self.x = random.randint(0, screen_width) #Alien spawning mechanics
             self.y = screen_height
@@ -43,6 +48,8 @@ class AlienCube:
             self.vx = math.cos(0) * base_speed
             self.vy = math.sin(random.uniform((5*math.pi)/6,(7*math.pi)/6)) * base_speed                                                       
         angle = 2 * math.pi * random.random()
+
+        utils.buttonDelay = 0
 
         self.expired = False
 
@@ -112,6 +119,7 @@ class AlienCube:
                 if my_mask.overlap(b_mask, offset):
                     self.expired = True
                     utils.kills = utils.kills + 1
+                    utils.needFirstKill = False  
                     utils.totalkills = utils.totalkills + 1
                     if b_tuple in bullets_list:
                         bullets_list.remove(b_tuple)
@@ -129,5 +137,7 @@ class AlienCube:
                 return health - 5, True
 
         return health, False
-
-
+    
+    def jimExplode(self, screen):
+        screen.blit(jimboomimage, (self.x, self.y))
+        self.expired = True

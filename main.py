@@ -1,7 +1,6 @@
 #  ͡( ͡° ͜ʖ ͡°)   <---- Lord Lenny
 # Checklist/brainstorming:
 #Waves (every 5 waves a new alien is introduced [bossfight every 10 waves])
-#Sound effects
 #Bosses follow player
 #"Boom" and other sound effect animations
 #Custom Skins + Skin changer menu
@@ -53,6 +52,7 @@ ubegonnarespawnimage = pygame.transform.scale(pygame.image.load("Respawn_pressed
 ubegonnaexitimage = pygame.transform.scale(pygame.image.load("Exit_pressed.png"), (screen_width, screen_height)) #exit button pressed
 ubegoimage = pygame.transform.scale(pygame.image.load("Start screen.png"), (screen_width, screen_height)) #startscreen
 ubegonowimage = pygame.transform.scale(pygame.image.load("Start screen pressed.png"), (screen_width, screen_height)) #startscreen but pressed
+
 # player takes damage
 def player_takes_damage():
     global fading, fade_direction, alpha, damageTaken
@@ -144,7 +144,7 @@ hptxtRect = txtsfs.get_rect()
 hptxtRect.topright = (screen_width - 10, 55)
 
 # wave text
-wavetxt = f"Wave: {str(wave)}"
+wavetxt = f"Wave: {int(math.floor(utils.totalkills/10))}"
 txtswing = font.render(wavetxt, True, textColor)  
 wavetxtRect = txtswing.get_rect()
 wavetxtRect.topleft = (50, 55)
@@ -264,6 +264,8 @@ buttonDelay = 0
 
 endButtonPressed = False
 # Game loop
+
+newWaveGo = False
     
 #screen.blit(ubegoimage, (0,0))
 if gamestarted == False and buttonPresssed == False:
@@ -401,22 +403,17 @@ while running:
         if u>0 and u%100 * size == 0 and not gameover:
             if utils.kills >= 10:
                 utils.kills=0
-                size = size - 0.05          
+                size = size - 0.05  
+                wave = wave + 1                   
             a = aln.AlienCube(oldX, oldY, size)
             aliens.append(a) 
             a = aln.AlienCube(oldX, oldY, size)
             aliens.append(a) 
-        
-        for a in aliens:
-            a.move()
-            a.detectCollision(active_bullets_data, bullets)
-            a.blit(screen)
-            health, damageTaken = a.detectShipCollision(ship_rect, ship_mask, health)
-            if damageTaken: 
-                player_takes_damage()
             
         aliens[:] = [a for a in aliens if not a.isExperied()] 
         
+        wave = math.floor(utils.totalkills/10)
+
         if u>0 and u%1000 * size == 0 and not gameover:
             if utils.kills >= 10:
                 utils.kills=0
@@ -447,7 +444,8 @@ while running:
             hptxt = f"Health: {int(decimalHealth*100)}"
         else:
             hptxt = f"Health: {int(0)}"
-            
+
+        wavetxt = f"Wave: {wave}"    
         killstxt = f"Kills: {str(utils.totalkills)}"
         txtsfs = font.render(hptxt, True, textColor)  
         txtswing = font.render(wavetxt, True, textColor) 
@@ -491,6 +489,31 @@ while running:
                 screen.blit(ui_bulletImage, (pos_x, pos_y))
             else:
                  screen.blit(ui_bulletImageGray, (pos_x, pos_y))
+
+        if utils.totalkills % 10 == 0 and utils.totalkills > 0 and utils.needFirstKill == False:
+            newWaveGo = True
+
+        if newWaveGo == True:
+            for a in aliens:
+                a.jimExplode(screen)
+            pygame.display.update()
+            for d in range(20000000):
+                pass
+        
+            #remove aliens from list
+            #render new wave text
+            newWaveGo = False
+            utils.needFirstKill = True
+            utils.kills = 0
+        else:
+            for a in aliens:
+                a.move()
+                a.detectCollision(active_bullets_data, bullets)
+                a.blit(screen)
+                health, damageTaken = a.detectShipCollision(ship_rect, ship_mask, health)
+                if damageTaken: 
+                    player_takes_damage()
+            
 
 #ChatGPT code (DO NOT TOUCH)
         if gameover == True:            
