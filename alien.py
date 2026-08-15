@@ -14,7 +14,6 @@ damageNoise = pygame.mixer.Sound("Damage.wav")
 SHOW_ALIEN_HITBOX = False
 
 base_speed = 2  # Aliens move 2 pixels per frame
-jimboomimage = pygame.transform.scale(pygame.image.load("Big_BOOM_temp.png"), (500, 500)) #BOOM
 
 class AlienCube:
     def __init__(self, shipx, shipy, alienSize):
@@ -24,6 +23,7 @@ class AlienCube:
         self.y = 0
         self.expired = False
         size = alienSize
+        self.exploding = False
 
         e = random.randint(0, 3)
 
@@ -55,17 +55,31 @@ class AlienCube:
 
         spriteSheetImageJim = pygame.image.load("Monke alien-sheet.png").convert_alpha() #alien sprite
         spriteSheetJim = tim.Tim(spriteSheetImageJim)
+        spriteSheetImageBoom = pygame.image.load("Explosion Boom-Sheet.png").convert_alpha() #alien sprite
+        spriteSheetBoom = tim.Tim(spriteSheetImageBoom)
 
         BLACK = (0, 0, 0)
 
         jimFrame1 = spriteSheetJim.get_image(0, 50, 50, 1.7 * size, BLACK).convert_alpha() #alien animation
         jimFrame2 = spriteSheetJim.get_image(1, 50, 50, 1.7 * size, BLACK).convert_alpha()
 
+        boomFrame1 = spriteSheetBoom.get_image(0, 50, 50, 1.7 * size, BLACK).convert_alpha()
+        boomFrame2 = spriteSheetBoom.get_image(1, 50, 50, 1.7 * size, BLACK).convert_alpha()
+        boomFrame3 = spriteSheetBoom.get_image(2, 50, 50, 1.7 * size, BLACK).convert_alpha()
+        boomFrame4 = spriteSheetBoom.get_image(3, 50, 50, 1.7 * size, BLACK).convert_alpha()
+        boomFrame5 = spriteSheetBoom.get_image(4, 50, 50, 1.7 * size, BLACK).convert_alpha()
+
         self.jimFrames = [jimFrame1, jimFrame2]
         self.jimMasks = [pygame.mask.from_surface(f) for f in self.jimFrames]
         self.currentJimFrame = 0
         self.jimFrameDelay = 600
         self.lastJimSwitch = pygame.time.get_ticks()
+
+        self.boomFrames = [boomFrame1, boomFrame2, boomFrame3, boomFrame4, boomFrame5]
+        self.boomMasks = [pygame.mask.from_surface(f) for f in self.boomFrames]
+        self.currentBoomFrame = 0
+        self.boomFrameDelay = 600
+        self.lastBoomSwitch = pygame.time.get_ticks()
 
         self.now = pygame.time.get_ticks()
 
@@ -137,7 +151,21 @@ class AlienCube:
                 return health - 5, True
 
         return health, False
+
+    def getExplosionFrames(self):
+        return self.boomFrames
     
     def jimExplode(self, screen):
-        screen.blit(jimboomimage, (self.x, self.y))
-        self.expired = True
+        self.currentBoomFrame += 0.015
+        image_rect = self.boomFrames[int(self.currentBoomFrame)].get_rect()
+        image_rect.x = self.x
+        image_rect.y = self.y
+
+        screen.blit(self.boomFrames[int(self.currentBoomFrame)], image_rect)
+        if self.currentBoomFrame > len(self.boomFrames) - 1:
+            self.expired = True
+            self.currentBoomFrame = 0
+            return True
+        else:
+            return False
+

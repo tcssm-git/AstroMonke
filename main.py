@@ -9,7 +9,6 @@
 #Ends at wave 50 with final boss
 #All the rest of the pixel arts :(
 
-
 import pygame
 import math
 import random
@@ -46,10 +45,10 @@ gameover = False
 damageTaken = False
 screen = pygame.display.set_mode((screen_width, screen_height))
 bulletimage = pygame.transform.scale(pygame.image.load("BULLET.png"), (10, 10))
-thumbimage = pygame.image.load("thumb-1920-825785.jpg") #background image
-ubededimage = pygame.transform.scale(pygame.image.load("Untitled_Presentation.png"), (screen_width, screen_height)) #deathscreen
-ubegonnarespawnimage = pygame.transform.scale(pygame.image.load("Respawn_pressed.png"), (screen_width, screen_height)) #respawn button pressed
-ubegonnaexitimage = pygame.transform.scale(pygame.image.load("Exit_pressed.png"), (screen_width, screen_height)) #exit button pressed
+thumbimage = pygame.image.load("thumb-1920-825785.png") #background image
+ubededimage = pygame.transform.scale(pygame.image.load("Astromonke deathscreen.png"), (screen_width, screen_height)) #deathscreen
+ubegonnarespawnimage = pygame.transform.scale(pygame.image.load("Astromonke deathscreen respawn.png"), (screen_width, screen_height)) #respawn button pressed
+ubegonnaexitimage = pygame.transform.scale(pygame.image.load("Astromonke deathscreen quit game.png"), (screen_width, screen_height)) #exit button pressed
 ubegoimage = pygame.transform.scale(pygame.image.load("Start screen.png"), (screen_width, screen_height)) #startscreen
 ubegonowimage = pygame.transform.scale(pygame.image.load("Start screen pressed.png"), (screen_width, screen_height)) #startscreen but pressed
 
@@ -94,6 +93,7 @@ bulletFrame5 = spriteSheetBullet.get_image(4, 10, 10, 3 * size, BLACK).convert_a
 bulletFrame6 = spriteSheetBullet.get_image(5, 10, 10, 3 * size, BLACK).convert_alpha()
 bulletFrame7 = spriteSheetBullet.get_image(6, 10, 10, 3 * size, BLACK).convert_alpha()
 bulletFrame8 = spriteSheetBullet.get_image(7, 10, 10, 3 * size, BLACK).convert_alpha()
+
 
 #player anim variables
 timFrames = [timFrame1, timFrame2]
@@ -275,237 +275,249 @@ if gamestarted == False and buttonPresssed == False:
 while running:
     now = pygame.time.get_ticks()
     clock.tick(125)
-
-    if gamestarted == False:
-        # Draw the menu background every frame while in menu mode
-        if not buttonPresssed:
-            screen.blit(ubegoimage, (0,0))
-        else:
-            screen.blit(ubegonowimage, (0,0))
+    if newWaveGo:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    buttonPresssed = True
-                                
-        if buttonPresssed:
-            buttonDelay += 1
+
+        screen.blit(thumbimage, (0,0))
+        screen.blit(timFrame1, (x, y))
+
+        BOOM_over = False
+
+            # Play every explosion at the same time
+
+        for a in aliens:
+
+            BOOM_over = a.jimExplode(screen)
+
+        if BOOM_over:
+            newWaveGo = False
+            utils.needFirstKill = True
+            utils.kills = 0
+
+        pygame.display.update()
+    else:
+
+        if gamestarted == False:
+            # Draw the menu background every frame while in menu mode
+            if not buttonPresssed:
+                screen.blit(ubegoimage, (0,0))
+            else:
+                screen.blit(ubegonowimage, (0,0))
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        buttonPresssed = True
+                                    
+            if buttonPresssed:
+                buttonDelay += 1
+                if buttonDelay > 25:
+                    backgroundMusic1.play(loops = -1)
+                    backgroundMusic1.set_volume(0.6)
+                    gamestarted = True
+            
+            pygame.display.flip() # Keep the menu updating
+            if buttonPresssed:   #for play button
+                buttonDelay += 1
             if buttonDelay > 25:
                 backgroundMusic1.play(loops = -1)
                 backgroundMusic1.set_volume(0.6)
                 gamestarted = True
+                
+        else:
+            if gameover==False:
+                screen.blit(thumbimage, (0,0))
+
+            timMoving = False
+
+            if health <= 0:
+                gameover = True
+                pygame.mixer.stop()
         
-        pygame.display.flip() # Keep the menu updating
-        if buttonPresssed:   #for play button
-            buttonDelay += 1
-        if buttonDelay > 25:
-            backgroundMusic1.play(loops = -1)
-            backgroundMusic1.set_volume(0.6)
-            gamestarted = True
-            
-    else:
-        if gameover==False:
-            screen.blit(thumbimage, (0,0))
 
-        timMoving = False
+            if now - lastBulletSwitch > bulletFrameDelay:
+                currentBulletFrame = (currentBulletFrame + 1) % len(bulletFrames)
+                lastBulletSwitch = now
+        
+            # Handle events (quitting game, creating bullets)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        if ammo > 0 and not reloading:
+                            bullets.append((x+37*size,y+37*size,dx*s,dy*s, angle))
+                            ammo = ammo - 1
+                            timShootingNoise.play()
+                    elif event.key == pygame.K_r:
+                        if ammo == 0 and not reloading:
+                            reloading = True
+                            reload_start_time = pygame.time.get_ticks()
+        
+            if fading:
+                alpha += fade_speed * fade_direction
 
-        if health <= 0:
-            gameover = True
-            pygame.mixer.stop()
-     
+                if fade_direction == 1 and alpha >= 30:
+                    alpha = 30
+                    fade_direction = -1
+                elif fade_direction == -1 and alpha <= 0:
+                    alpha = 0
+                    fading = False
 
-        if now - lastBulletSwitch > bulletFrameDelay:
-            currentBulletFrame = (currentBulletFrame + 1) % len(bulletFrames)
-            lastBulletSwitch = now
-    
-        # Handle events (quitting game, creating bullets)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    if ammo > 0 and not reloading:
-                        bullets.append((x+37*size,y+37*size,dx*s,dy*s, angle))
-                        ammo = ammo - 1
-                        timShootingNoise.play()
-                elif event.key == pygame.K_r:
-                    if ammo == 0 and not reloading:
-                        reloading = True
-                        reload_start_time = pygame.time.get_ticks()
-       
-        if fading:
-            alpha += fade_speed * fade_direction
+                damaged_screen.set_alpha(alpha)
+                screen.blit(damaged_screen, (0, 0))
 
-            if fade_direction == 1 and alpha >= 30:
-                alpha = 30
-                fade_direction = -1
-            elif fade_direction == -1 and alpha <= 0:
-                alpha = 0
-                fading = False
+            keys=pygame.key.get_pressed()
+                            
+            if keys[pygame.K_d]:
+                angle = angle - 1.7    
 
-            damaged_screen.set_alpha(alpha)
-            screen.blit(damaged_screen, (0, 0))
-
-        keys=pygame.key.get_pressed()
+            if keys[pygame.K_a]:
+                angle = angle + 1.7
                         
-        if keys[pygame.K_d]:
-            angle = angle - 1.7    
+            dx = -math.cos(math.radians(angle-90))*2
+            dy = math.sin(math.radians(angle-90))*2
 
-        if keys[pygame.K_a]:
-            angle = angle + 1.7
-                    
-        dx = -math.cos(math.radians(angle-90))*2
-        dy = math.sin(math.radians(angle-90))*2
+            if keys[pygame.K_w]:
+                timMoving = True
 
-        if keys[pygame.K_w]:
-            timMoving = True
-
-            if y<50 and dy>0:
-                y = y + dy
-            elif y>screen_height-120 and dy < 0:
-                y = y + dy
-            elif y>50 and y < screen_height-120:
-                y = y + dy
+                if y<50 and dy>0:
+                    y = y + dy
+                elif y>screen_height-120 and dy < 0:
+                    y = y + dy
+                elif y>50 and y < screen_height-120:
+                    y = y + dy
+                
+                if x<50 and dx>0:
+                    x = x + dx
+                elif x>screen_width-120 and dx < 0:
+                    x = x + dx
+                elif x>50 and x < screen_width-120:
+                    x = x + dx   
             
-            if x<50 and dx>0:
-                x = x + dx
-            elif x>screen_width-120 and dx < 0:
-                x = x + dx
-            elif x>50 and x < screen_width-120:
-                x = x + dx   
-        
-        if now - lastTimSwitch > timFrameDelay:
-            currentTimFrame = (currentTimFrame + 1) % len(timFrames)
-            lastTimSwitch = now
+            if now - lastTimSwitch > timFrameDelay:
+                currentTimFrame = (currentTimFrame + 1) % len(timFrames)
+                lastTimSwitch = now
 
-        if now - lastTimFireSwitch > timFireFrameDelay:
-            currentTimFireFrame = (currentTimFireFrame + 1) % len(timFireFrames)
-            lastTimFireSwitch = now
+            if now - lastTimFireSwitch > timFireFrameDelay:
+                currentTimFireFrame = (currentTimFireFrame + 1) % len(timFireFrames)
+                lastTimFireSwitch = now
 
-        if timMoving:
-            ship_frame = timFireFrames[currentTimFireFrame]
-        else:
-            ship_frame = timFrames[currentTimFrame]
-        
-        ship(x, y, angle, ship_frame)
-        ship_surface, ship_rect, ship_mask = get_ship_data(x, y, angle, ship_frame)
-
-        b = 0
-        active_bullets_data = []
-        while((b)<len(bullets)):
-            bullets[b] = (bullets[b][0]+bullets[b][2], bullets[b][1]+bullets[b][3], bullets[b][2], bullets[b][3], bullets[b][4])
-            b_surf, b_rect, b_mask = bullet(bullets[b][0], bullets[b][1], bulletFrames[currentBulletFrame], bullets[b][4])
-            active_bullets_data.append((b_rect, b_mask, bullets[b]))
-            b = b + 1
-
-        if u>0 and u%100 * size == 0 and not gameover:
-            if utils.kills >= 10:
-                utils.kills=0
-                size = size - 0.05  
-                wave = wave + 1                   
-            a = aln.AlienCube(oldX, oldY, size)
-            aliens.append(a) 
-            a = aln.AlienCube(oldX, oldY, size)
-            aliens.append(a) 
-            
-        aliens[:] = [a for a in aliens if not a.isExperied()] 
-        
-        wave = math.floor(utils.totalkills/10)
-
-        if u>0 and u%1000 * size == 0 and not gameover:
-            if utils.kills >= 10:
-                utils.kills=0
-                size = size - 0.05          
-            h = hth.Heath(size)
-            heathi.append(h) 
-            
-        for h in heathi:
-            h.blit(screen)
-            h.detectCollision(active_bullets_data, bullets)
-            health, damageTaken = h.detectShipCollision(ship_rect, ship_mask, health)
-            
-        heathi[:] = [h for h in heathi if not h.expired]
-        o = 0
-        while(o<len(bullets)-1):
-            if bullets[o][0] < 0:
-                _ = bullets.pop(o)
-            elif bullets[o][0] > screen_width:
-                _ = bullets.pop(o)      
-            elif bullets[o][1] < 0:
-                _ = bullets.pop(o)
-            elif bullets[o][1] > screen_height:
-                _ = bullets.pop(o) 
+            if timMoving:
+                ship_frame = timFireFrames[currentTimFireFrame]
             else:
-                o = o + 1
+                ship_frame = timFrames[currentTimFrame]
+            
+            ship(x, y, angle, ship_frame)
+            ship_surface, ship_rect, ship_mask = get_ship_data(x, y, angle, ship_frame)
 
-        if decimalHealth >= 0:
-            hptxt = f"Health: {int(decimalHealth*100)}"
-        else:
-            hptxt = f"Health: {int(0)}"
+            b = 0
+            active_bullets_data = []
+            while((b)<len(bullets)):
+                bullets[b] = (bullets[b][0]+bullets[b][2], bullets[b][1]+bullets[b][3], bullets[b][2], bullets[b][3], bullets[b][4])
+                b_surf, b_rect, b_mask = bullet(bullets[b][0], bullets[b][1], bulletFrames[currentBulletFrame], bullets[b][4])
+                active_bullets_data.append((b_rect, b_mask, bullets[b]))
+                b = b + 1
 
-        wavetxt = f"Wave: {wave}"    
-        killstxt = f"Kills: {str(utils.totalkills)}"
-        txtsfs = font.render(hptxt, True, textColor)  
-        txtswing = font.render(wavetxt, True, textColor) 
-        txtshipK = font.render(killstxt, True, textColor) 
-        hptxtRect = txtsfs.get_rect()
-        wavetxtRect = txtswing.get_rect()
-        killstxtRect = txtshipK.get_rect()
-        hptxtRect.topright = (screen_width - 50, 55)
-        wavetxtRect.topleft = (50, 55)
-        killstxtRect.topleft = (250, 55)
-        tntcacaobelow()
-        textRect()
-        screen.blit(txtswing, wavetxtRect)
-        screen.blit(txtsfs, hptxtRect)
-        screen.blit(txtshipK, killstxtRect)
-        tntcacao()
-        totch()
-        #reload loigic
-        if reloading:
-            current_time = pygame.time.get_ticks()
-            if current_time - reload_start_time >= reload_duration:
-                ammo = max_ammo
-                reloading = False
+            if u>0 and u%100 * size == 0 and not gameover:
+                if utils.kills >= 10:
+                    utils.kills=0
+                    size = size - 0.05  
+                    wave = wave + 1                   
+                a = aln.AlienCube(oldX, oldY, size)
+                aliens.append(a) 
+                a = aln.AlienCube(oldX, oldY, size)
+                aliens.append(a) 
+                
+            aliens[:] = [a for a in aliens if not a.isExperied()] 
+            
+            wave = math.floor(utils.totalkills/10)
 
-        ui_start_x = screen_width - 30
-        ui_start_y = screen_height - 50
-        ui_spacing = 5
-        oldY = y
-        oldX = x
-    
-        bullets_to_show = ammo
-        if reloading:
-            current_time = pygame.time.get_ticks()
-            progress = min((current_time - reload_start_time)/ reload_duration, 1.0)
-            bullets_to_show = int(max_ammo * progress)
+            if u>0 and u%1000 * size == 0 and not gameover:
+                if utils.kills >= 10:
+                    utils.kills=0
+                    size = size - 0.05          
+                h = hth.Heath(size)
+                heathi.append(h) 
+                
+            for h in heathi:
+                h.blit(screen)
+                h.detectCollision(active_bullets_data, bullets)
+                health, damageTaken = h.detectShipCollision(ship_rect, ship_mask, health)
+                
+            heathi[:] = [h for h in heathi if not h.expired]
+            o = 0
+            while(o<len(bullets)-1):
+                if bullets[o][0] < 0:
+                    _ = bullets.pop(o)
+                elif bullets[o][0] > screen_width:
+                    _ = bullets.pop(o)      
+                elif bullets[o][1] < 0:
+                    _ = bullets.pop(o)
+                elif bullets[o][1] > screen_height:
+                    _ = bullets.pop(o) 
+                else:
+                    o = o + 1
 
-        for i in range(max_ammo):
-            pos_x = ui_start_x
-            pos_y = ui_start_y - i * (ui_bulletSize + ui_spacing)
-            if i < bullets_to_show:
-                screen.blit(ui_bulletImage, (pos_x, pos_y))
+            if decimalHealth >= 0:
+                hptxt = f"Health: {int(decimalHealth*100)}"
             else:
-                 screen.blit(ui_bulletImageGray, (pos_x, pos_y))
+                hptxt = f"Health: {int(0)}"
 
-        if utils.totalkills % 10 == 0 and utils.totalkills > 0 and utils.needFirstKill == False:
-            newWaveGo = True
+            wavetxt = f"Wave: {wave}"    
+            killstxt = f"Kills: {str(utils.totalkills)}"
+            txtsfs = font.render(hptxt, True, textColor)  
+            txtswing = font.render(wavetxt, True, textColor) 
+            txtshipK = font.render(killstxt, True, textColor) 
+            hptxtRect = txtsfs.get_rect()
+            wavetxtRect = txtswing.get_rect()
+            killstxtRect = txtshipK.get_rect()
+            hptxtRect.topright = (screen_width - 50, 55)
+            wavetxtRect.topleft = (50, 55)
+            killstxtRect.topleft = (250, 55)
+            tntcacaobelow()
+            textRect()
+            screen.blit(txtswing, wavetxtRect)
+            screen.blit(txtsfs, hptxtRect)
+            screen.blit(txtshipK, killstxtRect)
+            tntcacao()
+            totch()
+            #reload loigic
+            if reloading:
+                current_time = pygame.time.get_ticks()
+                if current_time - reload_start_time >= reload_duration:
+                    ammo = max_ammo
+                    reloading = False
 
-        if newWaveGo == True:
-            for a in aliens:
-                a.jimExplode(screen)
-            pygame.display.update()
-            for d in range(20000000):
-                pass
+            ui_start_x = screen_width - 30
+            ui_start_y = screen_height - 50
+            ui_spacing = 5
+            oldY = y
+            oldX = x
         
-            #remove aliens from list
-            #render new wave text
-            newWaveGo = False
-            utils.needFirstKill = True
-            utils.kills = 0
-        else:
+            bullets_to_show = ammo
+            if reloading:
+                current_time = pygame.time.get_ticks()
+                progress = min((current_time - reload_start_time)/ reload_duration, 1.0)
+                bullets_to_show = int(max_ammo * progress)
+
+            for i in range(max_ammo):
+                pos_x = ui_start_x
+                pos_y = ui_start_y - i * (ui_bulletSize + ui_spacing)
+                if i < bullets_to_show:
+                    screen.blit(ui_bulletImage, (pos_x, pos_y))
+                else:
+                    screen.blit(ui_bulletImageGray, (pos_x, pos_y))
+
+            if utils.totalkills % 10 == 0 and utils.totalkills > 0 and utils.needFirstKill == False:
+                newWaveGo = True
+
+        
             for a in aliens:
                 a.move()
                 a.detectCollision(active_bullets_data, bullets)
@@ -513,50 +525,54 @@ while running:
                 health, damageTaken = a.detectShipCollision(ship_rect, ship_mask, health)
                 if damageTaken: 
                     player_takes_damage()
-            
+                
 
-#ChatGPT code (DO NOT TOUCH)
-        if gameover == True:            
-            aliens = []
-            if endButtonPressed == False:
-                screen.blit(ubededimage, (0,0))
-            for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    m_x, m_y = pygame.mouse.get_pos()
-                    if(m_x > (166) and m_x < (166 + dxx)) and (m_y > (698) and m_y < (698 + dyy)): #respawn
-                        health = 100
-                        gameover = False
-                        endButtonPressed = False                  
-                        aliens = []
-                        bullets = []
-                        ammo = max_ammo
-                        reloading = False
-                        angle = 0.01
-                        x, y = screen_width/2, screen_height/2 
-                        size = 2
-                        backgroundMusic1.play(loops = -1)
-                        heathi = []
-                    if(m_x > (1100) and m_x < (1100 + dxx)) and (m_y > (698) and m_y < (698 + dyy)): #exit to menu
-                        gamestarted = False
-                        buttonPresssed = False
-                        buttonDelay = 0
-                        health = 100
-                        decimalHealth = 1.0
-                        gameover = False
-                        endButtonPressed = False
-                        bullets = []
-                        ammo = max_ammo
-                        reloading = False
-                        aliens = []
-                        angle = 0.01
-                        x, y = screen_width/2, screen_height/2  
-                        heathi = []                                                                    
+    #ChatGPT code (TOUCH (sometimes))
+            if gameover == True:            
+                aliens = []
+                if endButtonPressed == False:
+                    screen.blit(ubededimage, (0,0))
+                for event in pygame.event.get():
+                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                        m_x, m_y = pygame.mouse.get_pos()
+                        if(m_x > (166) and m_x < (166 + dxx)) and (m_y > (698) and m_y < (698 + dyy)): #respawn
+                            health = 100
+                            gameover = False
+                            endButtonPressed = False                  
+                            aliens = []
+                            bullets = []
+                            ammo = max_ammo
+                            reloading = False
+                            angle = 0.01
+                            x, y = screen_width/2, screen_height/2 
+                            size = 2
+                            backgroundMusic1.play(loops = -1)
+                            heathi = []
+                            utils.kills = 0
+                            utils.totalkills = 0  
+                        if(m_x > (1100) and m_x < (1100 + dxx)) and (m_y > (698) and m_y < (698 + dyy)): #exit to menu
+                            gamestarted = False
+                            buttonPresssed = False
+                            buttonDelay = 0
+                            health = 100
+                            decimalHealth = 1.0
+                            gameover = False
+                            endButtonPressed = False
+                            bullets = []
+                            ammo = max_ammo
+                            reloading = False
+                            aliens = []
+                            angle = 0.01
+                            x, y = screen_width/2, screen_height/2  
+                            heathi = [] 
+                            utils.kills = 0
+                            utils.totalkills = 0                                                                 
 
             # Update the display   
         pygame.display.flip()
         u = u + 1
 
         decimalHealth = health/100
-    
+        
 # Quit Pygame
 pygame.quit()
