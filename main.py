@@ -282,7 +282,7 @@ while running:
                 running = False
 
         screen.blit(thumbimage, (0,0))
-        screen.blit(timFrame1, (x, y))
+        ship(x, y, angle, ship_frame)
 
         BOOM_over = False
 
@@ -291,6 +291,25 @@ while running:
         for a in aliens:
 
             BOOM_over = a.jimExplode(screen)
+
+        wavetxt = f"Wave: {wave}"    
+        killstxt = f"Kills: {str(utils.totalkills)}"
+        txtsfs = font.render(hptxt, True, textColor)  
+        txtswing = font.render(wavetxt, True, textColor) 
+        txtshipK = font.render(killstxt, True, textColor) 
+        hptxtRect = txtsfs.get_rect()
+        wavetxtRect = txtswing.get_rect()
+        killstxtRect = txtshipK.get_rect()
+        hptxtRect.topright = (screen_width - 50, 55)
+        wavetxtRect.topleft = (50, 55)
+        killstxtRect.topleft = (250, 55)
+        tntcacaobelow()
+        textRect()
+        screen.blit(txtswing, wavetxtRect)
+        screen.blit(txtsfs, hptxtRect)
+        screen.blit(txtshipK, killstxtRect)
+        tntcacao()
+        totch()
 
         if BOOM_over:
             newWaveGo = False

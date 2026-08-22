@@ -59,15 +59,16 @@ class AlienCube:
         spriteSheetBoom = tim.Tim(spriteSheetImageBoom)
 
         BLACK = (0, 0, 0)
+        WHITE = (255, 255, 255)
 
         jimFrame1 = spriteSheetJim.get_image(0, 50, 50, 1.7 * size, BLACK).convert_alpha() #alien animation
         jimFrame2 = spriteSheetJim.get_image(1, 50, 50, 1.7 * size, BLACK).convert_alpha()
 
-        boomFrame1 = spriteSheetBoom.get_image(0, 50, 50, 1.7 * size, BLACK).convert_alpha()
-        boomFrame2 = spriteSheetBoom.get_image(1, 50, 50, 1.7 * size, BLACK).convert_alpha()
-        boomFrame3 = spriteSheetBoom.get_image(2, 50, 50, 1.7 * size, BLACK).convert_alpha()
-        boomFrame4 = spriteSheetBoom.get_image(3, 50, 50, 1.7 * size, BLACK).convert_alpha()
-        boomFrame5 = spriteSheetBoom.get_image(4, 50, 50, 1.7 * size, BLACK).convert_alpha()
+        boomFrame1 = spriteSheetBoom.get_image(0, 70, 70, 1.7 * size, WHITE).convert_alpha()
+        boomFrame2 = spriteSheetBoom.get_image(1, 70, 70, 1.7 * size, WHITE).convert_alpha()
+        boomFrame3 = spriteSheetBoom.get_image(2, 70, 70, 1.7 * size, WHITE).convert_alpha()
+        boomFrame4 = spriteSheetBoom.get_image(3, 70, 70, 1.7 * size, WHITE).convert_alpha()
+        boomFrame5 = spriteSheetBoom.get_image(4, 70, 70, 1.7 * size, WHITE).convert_alpha()
 
         self.jimFrames = [jimFrame1, jimFrame2]
         self.jimMasks = [pygame.mask.from_surface(f) for f in self.jimFrames]
@@ -156,7 +157,7 @@ class AlienCube:
         return self.boomFrames
     
     def jimExplode(self, screen):
-        self.currentBoomFrame += 0.015
+        self.currentBoomFrame += 0.05
         image_rect = self.boomFrames[int(self.currentBoomFrame)].get_rect()
         image_rect.x = self.x
         image_rect.y = self.y

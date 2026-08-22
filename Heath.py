@@ -21,21 +21,52 @@ class Heath:
         self.x = random.randint(0, screen_width)
         self.y = random.randint(0, screen_height)
 
-        self.heathImage = pygame.image.load("Heath_Ledger_(2).jpg").convert_alpha() #alien sprite
-        self.heathImage = pygame.transform.scale(pygame.image.load("Heath_Ledger_(2).jpg"), (30, 60))
-        self.heathMask = pygame.mask.from_surface(self.heathImage)
+        spriteSheetImageHeath = pygame.image.load("Heath-sheet.png").convert_alpha()
+        spriteSheetHeath = tim.Tim(spriteSheetImageHeath)
 
         BLACK = (0, 0, 0)
+        WHITE = (255, 255, 255)
 
+        heathFrame1 = spriteSheetHeath.get_image(0, 10, 10, 3 * size, WHITE).convert_alpha()
+        heathFrame2 = spriteSheetHeath.get_image(1, 10, 10, 3 * size, WHITE).convert_alpha()
+        heathFrame3 = spriteSheetHeath.get_image(2, 10, 10, 3 * size, WHITE).convert_alpha()
+        heathFrame4 = spriteSheetHeath.get_image(3, 10, 10, 3 * size, WHITE).convert_alpha()
+        heathFrame5 = spriteSheetHeath.get_image(4, 10, 10, 3 * size, WHITE).convert_alpha()
+        heathFrame6 = spriteSheetHeath.get_image(5, 10, 10, 3 * size, WHITE).convert_alpha()
+        heathFrame7 = spriteSheetHeath.get_image(6, 10, 10, 3 * size, WHITE).convert_alpha()
+        heathFrame8 = spriteSheetHeath.get_image(7, 10, 10, 3 * size, WHITE).convert_alpha()
+        heathFrame9 = spriteSheetHeath.get_image(8, 10, 10, 3 * size, WHITE).convert_alpha()
+        heathFrame10 = spriteSheetHeath.get_image(9, 10, 10, 3 * size, WHITE).convert_alpha()
+
+        self.heathFrames = [heathFrame1, heathFrame2, heathFrame3, heathFrame4, heathFrame5, heathFrame6, heathFrame7, heathFrame8, heathFrame9, heathFrame10]
+        self.currentHeathFrame = 0
+        self.isAnimaniting = True
         self.now = pygame.time.get_ticks()
+        self.heathMasks = [pygame.mask.from_surface(f) for f in self.heathFrames]
 
         self.expired = False
 
     def blit(self, screen):
-        image_rect = self.heathImage.get_rect()
-        image_rect.x = self.x
-        image_rect.y = self.y
-        screen.blit(self.heathImage, image_rect)
+        if self.isAnimaniting == True:
+            self.currentHeathFrame += 0.05
+            if self.currentHeathFrame == len(self.heathFrames):
+                self.isAnimaniting = False
+            else:
+                image_rect = self.heathFrames[int(self.currentHeathFrame)].get_rect()
+                image_rect.x = self.x
+                image_rect.y = self.y
+                screen.blit(self.heathFrames[int(self.currentHeathFrame)], image_rect)
+        else:
+            image_rect = self.heathFrames[9].get_rect()
+            image_rect.x = self.x
+            image_rect.y = self.y
+            screen.blit(self.heathFrames[9], image_rect)
+            
+             
+
+
+
+
         if SHOW_HEATH_HITBOX:
             hitbox = self.heathImage.get_rect(topleft=(self.x, self.y))
             outline = self.heathMask.outline()
@@ -45,8 +76,8 @@ class Heath:
     
 #bullet collision detection
     def detectCollision(self, bullets_data, bullets_list):
-        my_rect = self.heathImage.get_rect(topleft=(self.x, self.y))
-        my_mask = self.heathMask
+        my_rect = self.heathFrames[int(self.currentHeathFrame)].get_rect(topleft=(self.x, self.y))
+        my_mask = self.heathMasks[int(self.currentHeathFrame)]
         
         for b_data in bullets_data[:]:
             b_rect, b_mask, b_tuple = b_data
@@ -61,8 +92,8 @@ class Heath:
 
 #ship collision detection
     def detectShipCollision(self, ship_rect, ship_mask, health):
-        my_rect = self.heathImage.get_rect(topleft=(self.x, self.y))
-        my_mask = self.heathMask
+        my_rect = self.heathFrames[int(self.currentHeathFrame)].get_rect(topleft=(self.x, self.y))
+        my_mask = self.heathMasks[int(self.currentHeathFrame)]
 
         if my_rect.colliderect(ship_rect):
             self.expired = True
