@@ -27,16 +27,16 @@ class Heath:
         BLACK = (0, 0, 0)
         WHITE = (255, 255, 255)
 
-        heathFrame1 = spriteSheetHeath.get_image(0, 10, 10, 3 * size, WHITE).convert_alpha()
-        heathFrame2 = spriteSheetHeath.get_image(1, 10, 10, 3 * size, WHITE).convert_alpha()
-        heathFrame3 = spriteSheetHeath.get_image(2, 10, 10, 3 * size, WHITE).convert_alpha()
-        heathFrame4 = spriteSheetHeath.get_image(3, 10, 10, 3 * size, WHITE).convert_alpha()
-        heathFrame5 = spriteSheetHeath.get_image(4, 10, 10, 3 * size, WHITE).convert_alpha()
-        heathFrame6 = spriteSheetHeath.get_image(5, 10, 10, 3 * size, WHITE).convert_alpha()
-        heathFrame7 = spriteSheetHeath.get_image(6, 10, 10, 3 * size, WHITE).convert_alpha()
-        heathFrame8 = spriteSheetHeath.get_image(7, 10, 10, 3 * size, WHITE).convert_alpha()
-        heathFrame9 = spriteSheetHeath.get_image(8, 10, 10, 3 * size, WHITE).convert_alpha()
-        heathFrame10 = spriteSheetHeath.get_image(9, 10, 10, 3 * size, WHITE).convert_alpha()
+        heathFrame1 = spriteSheetHeath.get_image(0, 30, 30, 1.5 * size, WHITE).convert_alpha()
+        heathFrame2 = spriteSheetHeath.get_image(1, 30, 30, 1.5 * size, WHITE).convert_alpha()
+        heathFrame3 = spriteSheetHeath.get_image(2, 30, 30, 1.5 * size, WHITE).convert_alpha()
+        heathFrame4 = spriteSheetHeath.get_image(3, 30, 30, 1.5 * size, WHITE).convert_alpha()
+        heathFrame5 = spriteSheetHeath.get_image(4, 30, 30, 1.5 * size, WHITE).convert_alpha()
+        heathFrame6 = spriteSheetHeath.get_image(5, 30, 30, 1.5 * size, WHITE).convert_alpha()
+        heathFrame7 = spriteSheetHeath.get_image(6, 30, 30, 1.5 * size, WHITE).convert_alpha()
+        heathFrame8 = spriteSheetHeath.get_image(7, 30, 30, 1.5 * size, WHITE).convert_alpha()
+        heathFrame9 = spriteSheetHeath.get_image(8, 30, 30, 1.5 * size, WHITE).convert_alpha()
+        heathFrame10 = spriteSheetHeath.get_image(9, 30, 30, 1.5 * size, WHITE).convert_alpha()
 
         self.heathFrames = [heathFrame1, heathFrame2, heathFrame3, heathFrame4, heathFrame5, heathFrame6, heathFrame7, heathFrame8, heathFrame9, heathFrame10]
         self.currentHeathFrame = 0
@@ -49,7 +49,7 @@ class Heath:
     def blit(self, screen):
         if self.isAnimaniting == True:
             self.currentHeathFrame += 0.05
-            if self.currentHeathFrame == len(self.heathFrames):
+            if int(self.currentHeathFrame) == len(self.heathFrames)-1:
                 self.isAnimaniting = False
             else:
                 image_rect = self.heathFrames[int(self.currentHeathFrame)].get_rect()

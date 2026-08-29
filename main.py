@@ -2,12 +2,12 @@
 # Checklist/brainstorming:
 #Waves (every 5 waves a new alien is introduced [bossfight every 10 waves])
 #Bosses follow player
-#"Boom" and other sound effect animations
 #Custom Skins + Skin changer menu
 #Score system
 #Different background and different track every 10 waves
 #Ends at wave 50 with final boss
 #All the rest of the pixel arts :(
+#Fix size
 
 import pygame
 import math
@@ -254,8 +254,6 @@ s = 5
 u = 0
 dx = 0
 dy = 0
-dxx = 442
-dyy = 145
 running = True
 gamestarted = False
 
@@ -554,7 +552,7 @@ while running:
                 for event in pygame.event.get():
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                         m_x, m_y = pygame.mouse.get_pos()
-                        if(m_x > (166) and m_x < (166 + dxx)) and (m_y > (698) and m_y < (698 + dyy)): #respawn
+                        if(m_x > (screen_width * 0.1) and m_x < (screen_width * 0.45)) and (m_y < (screen_height * 0.8) and m_y > screen_height * 0.5): #respawn
                             health = 100
                             gameover = False
                             endButtonPressed = False                  
@@ -569,7 +567,7 @@ while running:
                             heathi = []
                             utils.kills = 0
                             utils.totalkills = 0  
-                        if(m_x > (1100) and m_x < (1100 + dxx)) and (m_y > (698) and m_y < (698 + dyy)): #exit to menu
+                        if(m_x > (screen_width * 0.55) and m_x < (screen_width * 0.9)) and (m_y > (screen_height/5) and m_y < screen_height/5 + screen_height * 0.4): #exit to menu
                             gamestarted = False
                             buttonPresssed = False
                             buttonDelay = 0
