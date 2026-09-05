@@ -441,7 +441,7 @@ while running:
                 active_bullets_data.append((b_rect, b_mask, bullets[b]))
                 b = b + 1
 
-            if u>0 and u%100 * size == 0 and not gameover:
+            if u>0 and u%1 * size == 0 and not gameover:
                 if utils.kills >= 10:
                     utils.kills=0
                     size = size - 0.05  
@@ -547,12 +547,15 @@ while running:
     #ChatGPT code (TOUCH (sometimes))
             if gameover == True:            
                 aliens = []
-                if endButtonPressed == False:
-                    screen.blit(ubededimage, (0,0))
+                
+                
+                screen.blit(ubededimage, (0,0))
+                pygame.draw.rect(screen, (255, 255, 255), ((screen_width * 0.1), (screen_height * 0.5), (screen_width * 0.45), (screen_height * 0.6)), width = 0)  
                 for event in pygame.event.get():
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                        m_x, m_y = pygame.mouse.get_pos()
-                        if(m_x > (screen_width * 0.1) and m_x < (screen_width * 0.45)) and (m_y < (screen_height * 0.8) and m_y > screen_height * 0.5): #respawn
+                        m_x, m_y = event.pos
+                        print("mouse click")
+                        if(m_x > (screen_width * 0.1) and m_x < (screen_width * 0.45)) and (m_y < (screen_height * 0.8) and m_y > (screen_height * 0.5)): #respawn
                             health = 100
                             gameover = False
                             endButtonPressed = False                  
