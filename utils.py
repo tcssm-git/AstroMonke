@@ -4,3 +4,4 @@ buttonPressed = False
 buttonDelay = 0
 last_spawn_time = 0
 needFirstKill = False
+size = 2

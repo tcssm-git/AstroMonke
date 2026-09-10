@@ -7,13 +7,12 @@ import utils
 pygame.mixer.init()
 screen_width = 1920
 screen_height = 1020
-size = 2
 damageNoise = pygame.mixer.Sound("Damage.wav")
 
 # Set True to draw collision rect (sprite bounds = bullet + ship hit area)
 SHOW_ALIEN_HITBOX = False
 
-base_speed = 2  # Aliens move 2 pixels per frame
+base_speed = utils.size  # Aliens move 2 pixels per frame
 
 class AlienCube:
     def __init__(self, shipx, shipy, alienSize):
@@ -22,7 +21,7 @@ class AlienCube:
         self.x = 0
         self.y = 0
         self.expired = False
-        size = alienSize
+        utils.size = alienSize
         self.exploding = False
 
         e = random.randint(0, 3)
@@ -61,14 +60,14 @@ class AlienCube:
         BLACK = (0, 0, 0)
         WHITE = (255, 255, 255)
 
-        jimFrame1 = spriteSheetJim.get_image(0, 50, 50, 1.7 * size, BLACK).convert_alpha() #alien animation
-        jimFrame2 = spriteSheetJim.get_image(1, 50, 50, 1.7 * size, BLACK).convert_alpha()
+        jimFrame1 = spriteSheetJim.get_image(0, 50, 50, 1.7 * utils.size, BLACK).convert_alpha() #alien animation
+        jimFrame2 = spriteSheetJim.get_image(1, 50, 50, 1.7 * utils.size, BLACK).convert_alpha()
 
-        boomFrame1 = spriteSheetBoom.get_image(0, 70, 70, 1.7 * size, WHITE).convert_alpha()
-        boomFrame2 = spriteSheetBoom.get_image(1, 70, 70, 1.7 * size, WHITE).convert_alpha()
-        boomFrame3 = spriteSheetBoom.get_image(2, 70, 70, 1.7 * size, WHITE).convert_alpha()
-        boomFrame4 = spriteSheetBoom.get_image(3, 70, 70, 1.7 * size, WHITE).convert_alpha()
-        boomFrame5 = spriteSheetBoom.get_image(4, 70, 70, 1.7 * size, WHITE).convert_alpha()
+        boomFrame1 = spriteSheetBoom.get_image(0, 70, 70, 1.7 * utils.size, WHITE).convert_alpha()
+        boomFrame2 = spriteSheetBoom.get_image(1, 70, 70, 1.7 * utils.size, WHITE).convert_alpha()
+        boomFrame3 = spriteSheetBoom.get_image(2, 70, 70, 1.7 * utils.size, WHITE).convert_alpha()
+        boomFrame4 = spriteSheetBoom.get_image(3, 70, 70, 1.7 * utils.size, WHITE).convert_alpha()
+        boomFrame5 = spriteSheetBoom.get_image(4, 70, 70, 1.7 * utils.size, WHITE).convert_alpha()
 
         self.jimFrames = [jimFrame1, jimFrame2]
         self.jimMasks = [pygame.mask.from_surface(f) for f in self.jimFrames]

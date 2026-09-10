@@ -7,7 +7,6 @@ import utils
 pygame.mixer.init()
 screen_width = 1920
 screen_height = 1020
-size = 2
 heathNoise = pygame.mixer.Sound("Heal.wav")
 damageNoise = pygame.mixer.Sound("Damage.wav")
 
@@ -15,8 +14,8 @@ damageNoise = pygame.mixer.Sound("Damage.wav")
 SHOW_HEATH_HITBOX = False
 
 class Heath:
-    def __init__(self, heathSize):
-        size = heathSize
+    def __init__(self, heathsize):
+        utils.size = heathsize
 
         self.x = random.randint(0, screen_width)
         self.y = random.randint(0, screen_height)
@@ -27,16 +26,16 @@ class Heath:
         BLACK = (0, 0, 0)
         WHITE = (255, 255, 255)
 
-        heathFrame1 = spriteSheetHeath.get_image(0, 30, 30, 1.5 * size, WHITE).convert_alpha()
-        heathFrame2 = spriteSheetHeath.get_image(1, 30, 30, 1.5 * size, WHITE).convert_alpha()
-        heathFrame3 = spriteSheetHeath.get_image(2, 30, 30, 1.5 * size, WHITE).convert_alpha()
-        heathFrame4 = spriteSheetHeath.get_image(3, 30, 30, 1.5 * size, WHITE).convert_alpha()
-        heathFrame5 = spriteSheetHeath.get_image(4, 30, 30, 1.5 * size, WHITE).convert_alpha()
-        heathFrame6 = spriteSheetHeath.get_image(5, 30, 30, 1.5 * size, WHITE).convert_alpha()
-        heathFrame7 = spriteSheetHeath.get_image(6, 30, 30, 1.5 * size, WHITE).convert_alpha()
-        heathFrame8 = spriteSheetHeath.get_image(7, 30, 30, 1.5 * size, WHITE).convert_alpha()
-        heathFrame9 = spriteSheetHeath.get_image(8, 30, 30, 1.5 * size, WHITE).convert_alpha()
-        heathFrame10 = spriteSheetHeath.get_image(9, 30, 30, 1.5 * size, WHITE).convert_alpha()
+        heathFrame1 = spriteSheetHeath.get_image(0, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
+        heathFrame2 = spriteSheetHeath.get_image(1, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
+        heathFrame3 = spriteSheetHeath.get_image(2, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
+        heathFrame4 = spriteSheetHeath.get_image(3, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
+        heathFrame5 = spriteSheetHeath.get_image(4, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
+        heathFrame6 = spriteSheetHeath.get_image(5, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
+        heathFrame7 = spriteSheetHeath.get_image(6, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
+        heathFrame8 = spriteSheetHeath.get_image(7, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
+        heathFrame9 = spriteSheetHeath.get_image(8, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
+        heathFrame10 = spriteSheetHeath.get_image(9, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
 
         self.heathFrames = [heathFrame1, heathFrame2, heathFrame3, heathFrame4, heathFrame5, heathFrame6, heathFrame7, heathFrame8, heathFrame9, heathFrame10]
         self.currentHeathFrame = 0
