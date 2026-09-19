@@ -22,20 +22,20 @@ class Heath:
 
         spriteSheetImageHeath = pygame.image.load("Heath-sheet.png").convert_alpha()
         spriteSheetHeath = tim.Tim(spriteSheetImageHeath)
+        self.heathBOOOOOOM = pygame.image.load("Big_BOOM_temp.png").convert_alpha()
 
         BLACK = (0, 0, 0)
-        WHITE = (255, 255, 255)
 
-        heathFrame1 = spriteSheetHeath.get_image(0, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
-        heathFrame2 = spriteSheetHeath.get_image(1, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
-        heathFrame3 = spriteSheetHeath.get_image(2, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
-        heathFrame4 = spriteSheetHeath.get_image(3, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
-        heathFrame5 = spriteSheetHeath.get_image(4, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
-        heathFrame6 = spriteSheetHeath.get_image(5, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
-        heathFrame7 = spriteSheetHeath.get_image(6, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
-        heathFrame8 = spriteSheetHeath.get_image(7, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
-        heathFrame9 = spriteSheetHeath.get_image(8, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
-        heathFrame10 = spriteSheetHeath.get_image(9, 30, 30, 1.5 * utils.size, WHITE).convert_alpha()
+        heathFrame1 = spriteSheetHeath.get_image(0, 30, 30, 1.5 * utils.size, BLACK).convert_alpha()
+        heathFrame2 = spriteSheetHeath.get_image(1, 30, 30, 1.5 * utils.size, BLACK).convert_alpha()
+        heathFrame3 = spriteSheetHeath.get_image(2, 30, 30, 1.5 * utils.size, BLACK).convert_alpha()
+        heathFrame4 = spriteSheetHeath.get_image(3, 30, 30, 1.5 * utils.size, BLACK).convert_alpha()
+        heathFrame5 = spriteSheetHeath.get_image(4, 30, 30, 1.5 * utils.size, BLACK).convert_alpha()
+        heathFrame6 = spriteSheetHeath.get_image(5, 30, 30, 1.5 * utils.size, BLACK).convert_alpha()
+        heathFrame7 = spriteSheetHeath.get_image(6, 30, 30, 1.5 * utils.size, BLACK).convert_alpha()
+        heathFrame8 = spriteSheetHeath.get_image(7, 30, 30, 1.5 * utils.size, BLACK).convert_alpha()
+        heathFrame9 = spriteSheetHeath.get_image(8, 30, 30, 1.5 * utils.size, BLACK).convert_alpha()
+        heathFrame10 = spriteSheetHeath.get_image(9, 30, 30, 1.5 * utils.size, BLACK).convert_alpha()
 
         self.heathFrames = [heathFrame1, heathFrame2, heathFrame3, heathFrame4, heathFrame5, heathFrame6, heathFrame7, heathFrame8, heathFrame9, heathFrame10]
         self.currentHeathFrame = 0
@@ -47,7 +47,7 @@ class Heath:
 
     def blit(self, screen):
         if self.isAnimaniting == True:
-            self.currentHeathFrame += 0.05
+            self.currentHeathFrame += 0.03
             if int(self.currentHeathFrame) == len(self.heathFrames)-1:
                 self.isAnimaniting = False
             else:
@@ -67,8 +67,8 @@ class Heath:
 
 
         if SHOW_HEATH_HITBOX:
-            hitbox = self.heathImage.get_rect(topleft=(self.x, self.y))
-            outline = self.heathMask.outline()
+            hitbox = self.heathFrames[int(self.currentHeathFrame)].get_rect(topleft=(self.x, self.y))
+            outline = self.heathMasks[int(self.currentHeathFrame)].outline()
             if len(outline) > 2:
                 points = [(p[0] + hitbox.left, p[1] + hitbox.top) for p in outline]
                 pygame.draw.polygon(screen, (0, 255, 0), points, 2)
@@ -102,3 +102,12 @@ class Heath:
             else:
                 return 100, True
         return health, False
+
+    def heathExplode(self, screen):
+        image_rect = self.heathBOOOOOOM.get_rect()
+        image_rect.x = self.x
+        image_rect.y = self.y
+
+        screen.blit(self.heathBOOOOOOM, image_rect)
+
+        self.expired = True

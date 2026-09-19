@@ -12,8 +12,6 @@ damageNoise = pygame.mixer.Sound("Damage.wav")
 # Set True to draw collision rect (sprite bounds = bullet + ship hit area)
 SHOW_ALIEN_HITBOX = False
 
-base_speed = utils.size  # Aliens move 2 pixels per frame
-
 class AlienCube:
     def __init__(self, shipx, shipy, alienSize):
         self.vx = 0
@@ -21,7 +19,7 @@ class AlienCube:
         self.x = 0
         self.y = 0
         self.expired = False
-        utils.size = alienSize
+        self.base_speed = alienSize
         self.exploding = False
 
         e = random.randint(0, 3)
@@ -29,23 +27,23 @@ class AlienCube:
         if e == 0:#bottom
             self.x = random.randint(0, screen_width) #Alien spawning mechanics
             self.y = screen_height
-            self.vx = math.cos(random.uniform((4*math.pi)/3, (5*math.pi)/3)) * base_speed
-            self.vy = math.sin(3*math.pi/2) * base_speed 
+            self.vx = math.cos(random.uniform((4*math.pi)/3, (5*math.pi)/3)) * self.base_speed
+            self.vy = math.sin(3*math.pi/2) * self.base_speed 
         elif e == 1:#top
             self.x = random.randint(0, screen_width)
-            self.y = 0
-            self.vx = math.cos(random.uniform((4*math.pi)/3, (5*math.pi)/3)) * base_speed
-            self.vy = math.sin(math.pi/2) * base_speed
+            self.y = -200
+            self.vx = math.cos(random.uniform((4*math.pi)/3, (5*math.pi)/3)) * self.base_speed
+            self.vy = math.sin(math.pi/2) * self.base_speed
         elif e == 2:#right
             self.y = random.randint(0, screen_height)
             self.x = screen_width-50
-            self.vx = math.cos(math.pi) * base_speed
-            self.vy = math.sin(random.uniform((5*math.pi)/6,(7*math.pi)/6)) * base_speed
+            self.vx = math.cos(math.pi) * self.base_speed
+            self.vy = math.sin(random.uniform((5*math.pi)/6,(7*math.pi)/6)) * self.base_speed
         else:#left
             self.y = random.randint(0, screen_height) 
-            self.x = 0
-            self.vx = math.cos(0) * base_speed
-            self.vy = math.sin(random.uniform((5*math.pi)/6,(7*math.pi)/6)) * base_speed                                                       
+            self.x = -200
+            self.vx = math.cos(0) * self.base_speed
+            self.vy = math.sin(random.uniform((5*math.pi)/6,(7*math.pi)/6)) * self.base_speed                                                       
         angle = 2 * math.pi * random.random()
 
         utils.buttonDelay = 0
@@ -109,11 +107,11 @@ class AlienCube:
         self.x = self.x + self.vx
         self.y = self.y + self.vy
 
-        if self.x < 0:
+        if self.x < -200:
             self.expired = True
         elif self.x > screen_width:
             self.expired = True    
-        elif self.y < 0:
+        elif self.y < -200:
             self.expired = True
         elif self.y > screen_height:
             self.expired = True
@@ -125,13 +123,14 @@ class AlienCube:
         damageNoise.play
         my_rect = self._hit_rect()
         my_mask = self.jimMasks[self.currentJimFrame]
+        
 
         for b_data in bullets_data[:]:
             b_rect, b_mask, b_tuple = b_data
             if my_rect.colliderect(b_rect):
                 offset = (b_rect.left - my_rect.left, b_rect.top - my_rect.top)
                 if my_mask.overlap(b_mask, offset):
-                    self.expired = True
+                    self.exploding = True
                     utils.kills = utils.kills + 1
                     utils.needFirstKill = False  
                     utils.totalkills = utils.totalkills + 1

@@ -7,7 +7,8 @@
 #Different background and different track every 10 waves
 #Ends at wave 50 with final boss
 #All the rest of the pixel arts :(
-#Fix utils.size
+#Achievements
+#Aliens explode when shot
 
 import pygame
 import math
@@ -149,7 +150,7 @@ wavetxtRect = txtswing.get_rect()
 wavetxtRect.topleft = (50, 55)
 
 #kills text
-killstxt = f"Kills: {str(utils.totalkills)}"
+killstxt = f"Score: {str(utils.totalkills)}"
 txtshipK = font.render(killstxt, True, textColor)  
 killstxtRect = txtshipK.get_rect()
 killstxtRect.topleft = (250, 55)
@@ -290,6 +291,10 @@ while running:
 
             BOOM_over = a.jimExplode(screen)
 
+        for h in heathi:
+
+            h.heathExplode(screen)
+
         wavetxt = f"Wave: {wave}"    
         killstxt = f"Kills: {str(utils.totalkills)}"
         txtsfs = font.render(hptxt, True, textColor)  
@@ -313,7 +318,47 @@ while running:
             newWaveGo = False
             utils.needFirstKill = True
             utils.kills = 0
-            utils.size = utils.size * 0.5
+            utils.size = utils.size * 0.99
+
+                        #player anim frames
+            timFrame1 = spriteSheetTim.get_image(0, 50, 50, 1.7 * utils.size, BLACK).convert_alpha()
+            timFrame2 = spriteSheetTim.get_image(1, 50, 50, 1.7 * utils.size, BLACK).convert_alpha()
+
+            #palyer moving anim frames
+            timFireFrame1 = spriteSheetTimFire.get_image(0, 50, 50, 1.7 * utils.size, BLACK).convert_alpha()
+            timFireFrame2 = spriteSheetTimFire.get_image(1, 50, 50, 1.7 * utils.size, BLACK).convert_alpha()
+            timFireFrame3 = spriteSheetTimFire.get_image(2, 50, 50, 1.7 * utils.size, BLACK).convert_alpha()
+            timFireFrame4 = spriteSheetTimFire.get_image(3, 50, 50, 1.7 * utils.size, BLACK).convert_alpha()
+
+            #bullet anim frames
+            bulletFrame1 = spriteSheetBullet.get_image(0, 10, 10, 3 * utils.size, BLACK).convert_alpha()
+            bulletFrame2 = spriteSheetBullet.get_image(1, 10, 10, 3 * utils.size, BLACK).convert_alpha()
+            bulletFrame3 = spriteSheetBullet.get_image(2, 10, 10, 3 * utils.size, BLACK).convert_alpha()
+            bulletFrame4 = spriteSheetBullet.get_image(3, 10, 10, 3 * utils.size, BLACK).convert_alpha()
+            bulletFrame5 = spriteSheetBullet.get_image(4, 10, 10, 3 * utils.size, BLACK).convert_alpha()
+            bulletFrame6 = spriteSheetBullet.get_image(5, 10, 10, 3 * utils.size, BLACK).convert_alpha()
+            bulletFrame7 = spriteSheetBullet.get_image(6, 10, 10, 3 * utils.size, BLACK).convert_alpha()
+            bulletFrame8 = spriteSheetBullet.get_image(7, 10, 10, 3 * utils.size, BLACK).convert_alpha()
+
+
+            #player anim variables
+            timFrames = [timFrame1, timFrame2]
+            currentTimFrame = 0
+            timFrameDelay = 600
+            lastTimSwitch = pygame.time.get_ticks()
+
+            #player moving anim variables
+            timFireFrames = [timFireFrame1, timFireFrame2, timFireFrame3, timFireFrame4]
+            currentTimFireFrame = 0
+            timFireFrameDelay = 200
+            lastTimFireSwitch = pygame.time.get_ticks()
+
+            #player anim variables
+            bulletFrames = [bulletFrame1, bulletFrame2, bulletFrame3, bulletFrame4, bulletFrame5, bulletFrame6, bulletFrame7, bulletFrame8]
+            currentBulletFrame = 0
+            bulletFrameDelay = 100
+            lastBulletSwitch = pygame.time.get_ticks()
+
 
         pygame.display.update()
     else:
@@ -398,8 +443,8 @@ while running:
                 if keys[pygame.K_a]:
                     angle = angle + 1.7
                             
-                dx = -math.cos(math.radians(angle-90))*2
-                dy = math.sin(math.radians(angle-90))*2
+                dx = -math.cos(math.radians(angle-90))*utils.size
+                dy = math.sin(math.radians(angle-90))*utils.size
 
                 if keys[pygame.K_w]:
                     timMoving = True
@@ -438,7 +483,7 @@ while running:
                 active_bullets_data = []
                 while((b)<len(bullets)):
                     bullets[b] = (bullets[b][0]+bullets[b][2], bullets[b][1]+bullets[b][3], bullets[b][2], bullets[b][3], bullets[b][4])
-                    b_surf, b_rect, b_mask = bullet(bullets[b][0], bullets[b][1], bulletFrames[currentBulletFrame], bullets[b][4])
+                    b_surf, b_rect, b_mask = bullet(bullets[b][0], bullets[b][1], bulletFrames[currentBulletFrame], angle)
                     active_bullets_data.append((b_rect, b_mask, bullets[b]))
                     b = b + 1
                     
@@ -494,8 +539,8 @@ while running:
                         ammo = max_ammo
                         reloading = False
 
-                ui_start_x = screen_width - 30
-                ui_start_y = screen_height - 50
+                ui_start_x = screen_width/2 + 400
+                ui_start_y = 70
                 ui_spacing = 5
                 oldY = y
                 oldX = x
@@ -506,23 +551,20 @@ while running:
                     progress = min((current_time - reload_start_time)/ reload_duration, 1.0)
                     bullets_to_show = int(max_ammo * progress)
 
-                for i in range(max_ammo):
-                    pos_x = ui_start_x
-                    pos_y = ui_start_y - i * (ui_bulletsize + ui_spacing)
-                    if i < bullets_to_show:
-                        screen.blit(ui_bulletImage, (pos_x, pos_y))
-                    else:
-                        screen.blit(ui_bulletImageGray, (pos_x, pos_y))
+
 
                 if utils.totalkills % 10 == 0 and utils.totalkills > 0 and utils.needFirstKill == False:
                     newWaveGo = True
 
             
-                for a in aliens:
-                    a.move()
+                for a in aliens:  
                     a.detectCollision(active_bullets_data, bullets)
-                    a.blit(screen)
-                    health, damageTaken = a.detectShipCollision(ship_rect, ship_mask, health)
+                    if a.exploding == True:
+                        a.jimExplode(screen)
+                    else:
+                        a.move()
+                        a.blit(screen)   
+                        health, damageTaken = a.detectShipCollision(ship_rect, ship_mask, health)
                     if damageTaken: 
                         player_takes_damage()
                     wavetxt = f"Wave: {wave}"    
@@ -543,6 +585,14 @@ while running:
                     screen.blit(txtshipK, killstxtRect)
                     tntcacao()
                     totch()
+
+                for i in range(max_ammo):
+                    pos_x = ui_start_x - i * (ui_bulletsize + ui_spacing)
+                    pos_y = ui_start_y 
+                    if i < bullets_to_show:
+                        screen.blit(ui_bulletImage, (pos_x, pos_y))
+                    else:
+                        screen.blit(ui_bulletImageGray, (pos_x, pos_y))
     #ChatGPT code (TOUCH (sometimes))
             if gameover == True:            
                 aliens = []
