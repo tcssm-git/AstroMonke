@@ -21,6 +21,12 @@ class AlienCube:
         self.expired = False
         self.base_speed = alienSize
         self.exploding = False
+        self.tintCreakMallomar = False
+        '''Sorry to anybody except us who looks at this garbage. Because the temporary sprite for this animation had a 
+        poorly drawn absolute cinema man, we called the file "ABSOLUTE_CINEMA.png. Therefore, we were going to call this boolean self.cinemate.
+        However, cinemate kinda sounds like cinnamon. That made us think of the clip where the guy says "THAT IS NOT THE CORRECT WAY TO EAT A CIMAMIMANON ROLL!!!
+        We abbreviated that to tintcweacmnmnmr. tintcweac kinda looks like tintcreak so yeah. Also we just learned the word "mallomar" so we used that I guess.
+        It acts as a self.explode command for the alien crashing into the ship'''
 
         e = random.randint(0, 3)
 
@@ -52,8 +58,9 @@ class AlienCube:
 
         spriteSheetImageJim = pygame.image.load("Monke alien-sheet.png").convert_alpha() #alien sprite
         spriteSheetJim = tim.Tim(spriteSheetImageJim)
-        spriteSheetImageBoom = pygame.image.load("Explosion Boom-Sheet.png").convert_alpha() #alien sprite
+        spriteSheetImageBoom = pygame.image.load("Explosion Boom-Sheet.png").convert_alpha()
         spriteSheetBoom = tim.Tim(spriteSheetImageBoom)
+        self.cinemaTemp = pygame.image.load("ABSOLUTE_CINEMA.png").convert_alpha()
 
         BLACK = (0, 0, 0)
         WHITE = (255, 255, 255)
@@ -145,7 +152,8 @@ class AlienCube:
         if my_rect.colliderect(ship_rect):
             offset = (ship_rect.left - my_rect.left, ship_rect.top - my_rect.top)
             if my_mask.overlap(ship_mask, offset):
-                self.expired = True
+                self.tintCreakMallomar = True
+
                 damageNoise.play()
                 return health - 5, True
 
@@ -167,4 +175,21 @@ class AlienCube:
             return True
         else:
             return False
+
+    def jimCreakMallomar(self, screen):
+        self.currentBoomFrame += 0.05
+        #image_rect = self.boomFrames[int(self.currentBoomFrame)].get_rect()
+        image_rect = self.cinemaTemp.get_rect()
+        image_rect.x = self.x
+        image_rect.y = self.y
+
+        #screen.blit(self.boomFrames[int(self.currentBoomFrame)], image_rect)
+        screen.blit(self.cinemaTemp, image_rect)
+        if self.currentBoomFrame > 5 - 1:
+            self.expired = True
+            self.currentBoomFrame = 0
+            return True
+        else:
+            return False
+
 

@@ -1,6 +1,6 @@
 #  ͡( ͡° ͜ʖ ͡°)   <---- Lord Lenny
 # Checklist/brainstorming:
-#Waves (every 5 waves a new alien is introduced [bossfight every 10 waves])
+#Waves (every 5 waves a new alien is introduced [bossfight every 10 waves]) (numbers are subject to change)
 #Bosses follow player
 #Custom Skins + Skin changer menu
 #Score system
@@ -8,7 +8,6 @@
 #Ends at wave 50 with final boss
 #All the rest of the pixel arts :(
 #Achievements
-#Aliens explode when shot
 
 import pygame
 import math
@@ -227,6 +226,8 @@ def totch():
     txtsfs = font.render(hptxt, True, textColor)
     wavetxt = f"Wave: {str(wave)}"
     txtswing = font.render(wavetxt, True, textColor)
+    killstxt = f"Score: {str(utils.kills)}"
+    txtrobot = font.render(killstxt, True, textColor)
 
 bullets = []
 aliens = []
@@ -285,8 +286,6 @@ while running:
 
         BOOM_over = False
 
-            # Play every explosion at the same time
-
         for a in aliens:
 
             BOOM_over = a.jimExplode(screen)
@@ -295,8 +294,7 @@ while running:
 
             h.heathExplode(screen)
 
-        wavetxt = f"Wave: {wave}"    
-        killstxt = f"Kills: {str(utils.totalkills)}"
+        txtrobot = font.render(killstxt, True, textColor)
         txtsfs = font.render(hptxt, True, textColor)  
         txtswing = font.render(wavetxt, True, textColor) 
         txtshipK = font.render(killstxt, True, textColor) 
@@ -561,14 +559,16 @@ while running:
                     a.detectCollision(active_bullets_data, bullets)
                     if a.exploding == True:
                         a.jimExplode(screen)
+                    elif a.tintCreakMallomar == True:
+                        a.jimCreakMallomar(screen)
                     else:
                         a.move()
                         a.blit(screen)   
                         health, damageTaken = a.detectShipCollision(ship_rect, ship_mask, health)
-                    if damageTaken: 
+                    if damageTaken:
                         player_takes_damage()
                     wavetxt = f"Wave: {wave}"    
-                    killstxt = f"Kills: {str(utils.totalkills)}"
+                    killstxt = f"Score: {str(utils.totalkills)}"
                     txtsfs = font.render(hptxt, True, textColor)  
                     txtswing = font.render(wavetxt, True, textColor) 
                     txtshipK = font.render(killstxt, True, textColor) 
