@@ -246,8 +246,8 @@ heathi = []
 
 timer = 0
 wave = 0
-x = screen_width/2 - 75
-y = screen_height/2 - 75
+utils.x = screen_width/2 - 75
+utils.y = screen_height/2 - 75
 oldX = 0
 oldY = 0
 angle = 0.01
@@ -282,7 +282,7 @@ while running:
                 running = False
 
         screen.blit(thumbimage, (0,0))
-        ship(x, y, angle, ship_frame)
+        ship(utils.x, utils.y, angle, ship_frame)
 
         BOOM_over = False
 
@@ -412,7 +412,7 @@ while running:
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_SPACE:
                             if ammo > 0 and not reloading:
-                                bullets.append((x+37*utils.size,y+37*utils.size,dx*s,dy*s, angle))
+                                bullets.append((utils.x+37*utils.size,utils.y+37*utils.size,dx*s,dy*s, angle))
                                 ammo = ammo - 1
                                 timShootingNoise.play()
                         elif event.key == pygame.K_r:
@@ -447,19 +447,19 @@ while running:
                 if keys[pygame.K_w]:
                     timMoving = True
 
-                    if y<50 and dy>0:
-                        y = y + dy
-                    elif y>screen_height-120 and dy < 0:
-                        y = y + dy
-                    elif y>50 and y < screen_height-120:
-                        y = y + dy
+                    if utils.y<50 and dy>0:
+                        utils.y = utils.y + dy
+                    elif utils.y>screen_height-120 and dy < 0:
+                        utils.y = utils.y + dy
+                    elif utils.y>50 and utils.y < screen_height-120:
+                        utils.y = utils.y + dy
                     
-                    if x<50 and dx>0:
-                        x = x + dx
-                    elif x>screen_width-120 and dx < 0:
-                        x = x + dx
-                    elif x>50 and x < screen_width-120:
-                        x = x + dx   
+                    if utils.x<50 and dx>0:
+                        utils.x = utils.x + dx
+                    elif utils.x>screen_width-120 and dx < 0:
+                        utils.x = utils.x + dx
+                    elif utils.x>50 and utils.x < screen_width-120:
+                        utils.x = utils.x + dx   
                 
                 if now - lastTimSwitch > timFrameDelay:
                     currentTimFrame = (currentTimFrame + 1) % len(timFrames)
@@ -474,8 +474,8 @@ while running:
                 else:
                     ship_frame = timFrames[currentTimFrame]
                 
-                ship(x, y, angle, ship_frame)
-                ship_surface, ship_rect, ship_mask = get_ship_data(x, y, angle, ship_frame)
+                ship(utils.x, utils.y, angle, ship_frame)
+                ship_surface, ship_rect, ship_mask = get_ship_data(utils.x, utils.y, angle, ship_frame)
 
                 b = 0
                 active_bullets_data = []
@@ -490,9 +490,9 @@ while running:
                         utils.kills=0
                         utils.size = utils.size - 0.05  
                         wave = wave + 1                   
-                    a = aln.AlienCube(oldX, oldY, utils.size)
+                    a = aln.AlienCreep(oldX, oldY, utils.size)
                     aliens.append(a) 
-                    a = aln.AlienCube(oldX, oldY, utils.size)
+                    a = aln.AlienCreep(oldX, oldY, utils.size)
                     aliens.append(a) 
                     
                 aliens[:] = [a for a in aliens if not a.isExperied()] 
@@ -540,8 +540,8 @@ while running:
                 ui_start_x = screen_width/2 + 400
                 ui_start_y = 70
                 ui_spacing = 5
-                oldY = y
-                oldX = x
+                oldY = utils.y
+                oldX = utils.x
             
                 bullets_to_show = ammo
                 if reloading:
@@ -611,7 +611,7 @@ while running:
                                 ammo = max_ammo
                                 reloading = False
                                 angle = 0.01
-                                x, y = screen_width/2 - 75, screen_height/2 - 75
+                                utils.x, utils.y = screen_width/2 - 75, screen_height/2 - 75
                                 utils.size = 2
                                 backgroundMusic1.play(loops = -1)
                                 heathi = []
@@ -626,7 +626,7 @@ while running:
                                 ammo = max_ammo
                                 reloading = False
                                 angle = 0.01
-                                x, y = screen_width/2 - 75, screen_height/2 - 75
+                                utils.x, utils.y = screen_width/2 - 75, screen_height/2 - 75
                                 utils.size = 2
                                 backgroundMusic1.play(loops = -1)
                                 heathi = []

@@ -23,7 +23,7 @@ class AlienCube:
         self.exploding = False
         self.tintCreakMallomar = False
         '''Sorry to anybody except us who looks at this garbage. Because the temporary sprite for this animation had a 
-        poorly drawn absolute cinema man, we called the file "ABSOLUTE_CINEMA.png. Therefore, we were going to call this boolean self.cinemate.
+        poorly drawn absolute cinema man, we called the file "ABSOLUTE_CINEMA.png." Therefore, we were going to call this boolean self.cinemate.
         However, cinemate kinda sounds like cinnamon. That made us think of the clip where the guy says "THAT IS NOT THE CORRECT WAY TO EAT A CIMAMIMANON ROLL!!!
         We abbreviated that to tintcweacmnmnmr. tintcweac kinda looks like tintcreak so yeah. Also we just learned the word "mallomar" so we used that I guess.
         It acts as a self.explode command for the alien crashing into the ship'''
@@ -114,6 +114,8 @@ class AlienCube:
         self.x = self.x + self.vx
         self.y = self.y + self.vy
 
+
+
         if self.x < -200:
             self.expired = True
         elif self.x > screen_width:
@@ -191,5 +193,30 @@ class AlienCube:
             return True
         else:
             return False
+
+class AlienCreep(AlienCube):
+    def __init__(self, shipx, shipy, alienSize):
+        super().__init__(shipx, shipy, alienSize)
+
+    def move(self):
+
+        self.vx = self.base_speed*((utils.x - self.x)/(math.sqrt((utils.y - self.y)**2+(utils.x - self.x)**2)))*0.75
+        self.vy = self.base_speed*((utils.y - self.y)/(math.sqrt((utils.y - self.y)**2+(utils.x - self.x)**2)))*0.75
+        
+        self.x = self.x + self.vx
+        self.y = self.y + self.vy
+
+        if self.x < -200:
+            self.expired = True
+        elif self.x > screen_width:
+            self.expired = True    
+        elif self.y < -200:
+            self.expired = True
+        elif self.y > screen_height:
+            self.expired = True
+        
+        
+
+
 
 
