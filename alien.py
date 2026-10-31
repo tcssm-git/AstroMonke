@@ -8,6 +8,8 @@ pygame.mixer.init()
 screen_width = 1920
 screen_height = 1020
 damageNoise = pygame.mixer.Sound("Damage.wav")
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
 
 # Set True to draw collision rect (sprite bounds = bullet + ship hit area)
 SHOW_ALIEN_HITBOX = False
@@ -26,6 +28,7 @@ class AlienCube:
         poorly drawn absolute cinema man, we called the file "ABSOLUTE_CINEMA.png." Therefore, we were going to call this boolean self.cinemate.
         However, cinemate kinda sounds like cinnamon. That made us think of the clip where the guy says "THAT IS NOT THE CORRECT WAY TO EAT A CIMAMIMANON ROLL!!!
         We abbreviated that to tintcweacmnmnmr. tintcweac kinda looks like tintcreak so yeah. Also we just learned the word "mallomar" so we used that I guess.
+        
         It acts as a self.explode command for the alien crashing into the ship'''
 
         e = random.randint(0, 3)
@@ -61,9 +64,6 @@ class AlienCube:
         spriteSheetImageBoom = pygame.image.load("Explosion Boom-Sheet.png").convert_alpha()
         spriteSheetBoom = tim.Tim(spriteSheetImageBoom)
         self.cinemaTemp = pygame.image.load("ABSOLUTE_CINEMA.png").convert_alpha()
-
-        BLACK = (0, 0, 0)
-        WHITE = (255, 255, 255)
 
         jimFrame1 = spriteSheetJim.get_image(0, 50, 50, 1.7 * utils.size, BLACK).convert_alpha() #alien animation
         jimFrame2 = spriteSheetJim.get_image(1, 50, 50, 1.7 * utils.size, BLACK).convert_alpha()
@@ -198,6 +198,13 @@ class AlienCreep(AlienCube):
     def __init__(self, shipx, shipy, alienSize):
         super().__init__(shipx, shipy, alienSize)
 
+        jimFrameSheetImage = pygame.image.load("Jont coob alien.png").convert_alpha()
+        jimFrameSheet = tim.Tim(jimFrameSheetImage)
+
+        jimFrame1 = jimFrameSheet.get_image(0, 120, 120, 0.75 * utils.size, BLACK).convert_alpha() #alien animation
+
+        self.jimFrames = [jimFrame1]
+
     def move(self):
 
         self.vx = self.base_speed*((utils.x - self.x)/(math.sqrt((utils.y - self.y)**2+(utils.x - self.x)**2)))*0.75
@@ -214,6 +221,8 @@ class AlienCreep(AlienCube):
             self.expired = True
         elif self.y > screen_height:
             self.expired = True
+
+        
         
         
 

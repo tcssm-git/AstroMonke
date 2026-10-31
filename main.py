@@ -1,7 +1,6 @@
 #  ͡( ͡° ͜ʖ ͡°)   <---- Lord Lenny
 # Checklist/brainstorming:
 #Waves (every 5 waves a new alien is introduced [bossfight every 10 waves]) (numbers are subject to change)
-#Bosses follow player
 #Custom Skins + Skin changer menu
 #Score system
 #Different background and different track every 10 waves
@@ -256,6 +255,7 @@ u = 0
 dx = 0
 dy = 0
 funnyNumber0 = 100
+funnyNumber1 = 250
 running = True
 gamestarted = False
 
@@ -490,11 +490,17 @@ while running:
                         utils.kills=0
                         utils.size = utils.size - 0.05  
                         wave = wave + 1                   
+                    a = aln.AlienCube(oldX, oldY, utils.size)
+                    aliens.append(a) 
+                    a = aln.AlienCube(oldX, oldY, utils.size)
+                    aliens.append(a) 
+
+                if u>0 and u%funnyNumber1 * utils.size == 0 and not gameover and wave >= 2:                 
                     a = aln.AlienCreep(oldX, oldY, utils.size)
                     aliens.append(a) 
                     a = aln.AlienCreep(oldX, oldY, utils.size)
                     aliens.append(a) 
-                    
+                                    
                 aliens[:] = [a for a in aliens if not a.isExperied()] 
                 
                 wave = math.floor(utils.totalkills/10)
@@ -631,7 +637,10 @@ while running:
                                 backgroundMusic1.play(loops = -1)
                                 heathi = []
                                 utils.kills = 0
-                                utils.totalkills = 0  
+                                utils.totalkills = 0
+                                gamestarted = False  
+                                buttonPresssed = False
+                                buttonDelay = 0
                     if event.type == pygame.QUIT:
                         running = False
 
