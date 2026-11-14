@@ -16,6 +16,7 @@ import tim
 import time
 import utils
 import Heath as hth
+import boss as bs
 
 pygame.init()
 pygame.mixer.init()
@@ -157,6 +158,8 @@ killstxtRect.topleft = (250, 55)
 
 # Set window title
 pygame.display.set_caption("Minimal Pygame Example")
+
+him = bs.Him(utils.size)
 
 mask_cache = {}
 
@@ -310,7 +313,14 @@ while running:
         screen.blit(txtsfs, hptxtRect)
         screen.blit(txtshipK, killstxtRect)
         tntcacao()
-        totch()
+
+        for i in range(max_ammo):
+            pos_x = ui_start_x - i * (ui_bulletsize + ui_spacing)
+            pos_y = ui_start_y 
+            if i < bullets_to_show:
+                screen.blit(ui_bulletImage, (pos_x, pos_y))
+            else:
+                screen.blit(ui_bulletImageGray, (pos_x, pos_y))
 
         if BOOM_over:
             newWaveGo = False
@@ -484,7 +494,7 @@ while running:
                     b_surf, b_rect, b_mask = bullet(bullets[b][0], bullets[b][1], bulletFrames[currentBulletFrame], angle)
                     active_bullets_data.append((b_rect, b_mask, bullets[b]))
                     b = b + 1
-                    
+                    '''
                 if u>0 and u%funnyNumber0 * utils.size == 0 and not gameover:
                     if utils.kills >= 10:
                         utils.kills=0
@@ -500,7 +510,9 @@ while running:
                     aliens.append(a) 
                     a = aln.AlienCreep(oldX, oldY, utils.size)
                     aliens.append(a) 
-                                    
+                                '''
+                him.move()
+                him.blit(screen)
                 aliens[:] = [a for a in aliens if not a.isExperied()] 
                 
                 wave = math.floor(utils.totalkills/10)
@@ -561,36 +573,35 @@ while running:
                     newWaveGo = True
 
             
-                for a in aliens:  
-                    a.detectCollision(active_bullets_data, bullets)
-                    if a.exploding == True:
-                        a.jimExplode(screen)
-                    elif a.tintCreakMallomar == True:
-                        a.jimCreakMallomar(screen)
-                    else:
-                        a.move()
-                        a.blit(screen)   
-                        health, damageTaken = a.detectShipCollision(ship_rect, ship_mask, health)
-                    if damageTaken:
-                        player_takes_damage()
-                    wavetxt = f"Wave: {wave}"    
-                    killstxt = f"Score: {str(utils.totalkills)}"
-                    txtsfs = font.render(hptxt, True, textColor)  
-                    txtswing = font.render(wavetxt, True, textColor) 
-                    txtshipK = font.render(killstxt, True, textColor) 
-                    hptxtRect = txtsfs.get_rect()
-                    wavetxtRect = txtswing.get_rect()
-                    killstxtRect = txtshipK.get_rect()
-                    hptxtRect.topright = (screen_width - 50, 55)
-                    wavetxtRect.topleft = (50, 55)
-                    killstxtRect.topleft = (250, 55)
-                    tntcacaobelow()
-                    textRect()
-                    screen.blit(txtswing, wavetxtRect)
-                    screen.blit(txtsfs, hptxtRect)
-                    screen.blit(txtshipK, killstxtRect)
-                    tntcacao()
-                    totch()
+                # for a in aliens:  
+                #     a.detectCollision(active_bullets_data, bullets)
+                #     if a.exploding == True:
+                #         a.jimExplode(screen)
+                #     elif a.tintCreakMallomar == True:
+                #         a.jimCreakMallomar(screen)
+                #     else:
+                #         a.move()
+                #         a.blit(screen)   
+                #         health, damageTaken = a.detectShipCollision(ship_rect, ship_mask, health)
+                #     if damageTaken:
+                #         player_takes_damage()
+                wavetxt = f"Wave: {wave}"    
+                killstxt = f"Score: {str(utils.totalkills)}"
+                txtsfs = font.render(hptxt, True, textColor)  
+                txtswing = font.render(wavetxt, True, textColor) 
+                txtshipK = font.render(killstxt, True, textColor) 
+                hptxtRect = txtsfs.get_rect()
+                wavetxtRect = txtswing.get_rect()
+                killstxtRect = txtshipK.get_rect()
+                hptxtRect.topright = (screen_width - 50, 55)
+                wavetxtRect.topleft = (50, 55)
+                killstxtRect.topleft = (250, 55)
+                tntcacaobelow()
+                textRect()
+                screen.blit(txtswing, wavetxtRect)
+                screen.blit(txtsfs, hptxtRect)
+                screen.blit(txtshipK, killstxtRect)
+                tntcacao()
 
                 for i in range(max_ammo):
                     pos_x = ui_start_x - i * (ui_bulletsize + ui_spacing)
