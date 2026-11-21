@@ -16,7 +16,7 @@ class Him:
         self.y = -200
         self.now = pygame.time.get_ticks()
         self.currentHimFrame = 0
-        self.latHimSwitch = self.now
+        self.lastHimSwitch = self.now
         self.base_speed = alienSize
         self.currentMoveChip = 0
 
@@ -40,26 +40,26 @@ class Him:
 
         self.himFrames = [himFrame1]
         
-        def blit(self, screen):
-            self.now = pygame.time.get_ticks()
-            if self.now - self.lastHimSwitch > self.himFrameDelay:
-                self.currentHimFrame = (self.currentHimFrame + 1) % len(self.himFrames)
-                self.lastHimSwitch = self.now
-            image_rect = self.himFrames[self.currentHimFrame].get_rect()
-            image_rect.x = self.x
-            image_rect.y = self.y
-            screen.blit(self.himFrames[self.currentHimFrame], image_rect)
+    def blit(self, screen):
+        self.now = pygame.time.get_ticks()
+        if self.now - self.lastHimSwitch > self.himFrameDelay:
+            self.currentHimFrame = (self.currentHimFrame + 1) % len(self.himFrames)
+            self.lastHimSwitch = self.now
+        image_rect = self.himFrames[self.currentHimFrame].get_rect()
+        image_rect.x = self.x
+        image_rect.y = self.y
+        screen.blit(self.himFrames[self.currentHimFrame], image_rect)
 
-        def move(self):
+    def move(self):
 
-            x,y = self.moveChips[self.currentMoveChip]
+        x,y = self.moveChips[self.currentMoveChip]
 
-            if self.x > x - 50 and self.x < x + 50:
-                self.currentMoveChip = (self.currentMoveChip + 1) % len(self.MoveChips)
+        if self.x > x - 50 and self.x < x + 50:
+            self.currentMoveChip = (self.currentMoveChip + 1) % len(self.MoveChips)
 
-            self.vx = self.base_speed*((x - self.x)/(math.sqrt((y - self.y)**2+(x - self.x)**2)))*5
-            self.vy = self.base_speed*((y - self.y)/(math.sqrt((y - self.y)**2+(x - self.x)**2)))*5
+        self.vx = self.base_speed*((x - self.x)/(math.sqrt((y - self.y)**2+(x - self.x)**2)))*5
+        self.vy = self.base_speed*((y - self.y)/(math.sqrt((y - self.y)**2+(x - self.x)**2)))*5
 
 
-            self.x = self.x + self.vx
-            self.y = self.y + self.vy
+        self.x = self.x + self.vx
+        self.y = self.y + self.vy
